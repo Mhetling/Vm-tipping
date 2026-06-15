@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VM-tipping 2026 — Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#0a1d1a; --bg2:#0c2420; --surface:#103029; --surface2:#143a31;
+ --line:rgba(234,242,238,.10); --line2:rgba(234,242,238,.18);
+ --ink:#eaf2ee; --muted:#8aa69c; --muted2:#5d7b71;
+ --gold:#f5c451; --goldd:#e0ad33; --goldsoft:rgba(245,196,81,.14); --goldbg:#2b3522; --goldbg2:#3a472a; --chalkbg:#172620; --gpp:#3d3a1f;
+ --chalk:#9fd9bd;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{background:
+  radial-gradient(900px 500px at 80% -10%,rgba(245,196,81,.07),transparent 60%),
+  radial-gradient(700px 600px at -10% 110%,rgba(159,217,189,.05),transparent 55%),
+  var(--bg);}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 18px 80px}
+.anton{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:.02em}
+.mono{font-family:'Space Mono',monospace}
+
+/* header */
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;
+ padding-bottom:16px;border-bottom:1px solid var(--line2)}
+.title{line-height:.86}
+.eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);
+ font-weight:600;margin-bottom:8px}
+h1.anton{font-size:clamp(38px,8vw,72px);margin:0;text-transform:uppercase;
+ color:var(--ink);text-shadow:0 2px 0 rgba(0,0,0,.25)}
+h1 .yr{color:var(--gold)}
+.live{display:inline-flex;align-items:center;gap:8px;background:var(--goldbg);
+ border:1px solid rgba(245,196,81,.35);color:var(--gold);font-weight:700;
+ padding:8px 13px;border-radius:999px;font-size:12.5px;letter-spacing:.04em}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--gold);
+ box-shadow:0 0 0 0 rgba(245,196,81,.6);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(245,196,81,.55)}70%{box-shadow:0 0 0 9px rgba(245,196,81,0)}100%{box-shadow:0 0 0 0 rgba(245,196,81,0)}}
+
+/* scoring legend */
+.legend{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 22px;align-items:center}
+.legend .lab{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted2);margin-right:4px}
+.chip{font-size:12px;padding:5px 10px;border-radius:7px;border:1px solid var(--line2);
+ color:#cdded6;display:inline-flex;gap:7px;align-items:center}
+.chip b{font-family:'Space Mono',monospace;font-weight:700}
+.sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* hero chart */
+.card{background:linear-gradient(180deg,var(--surface),var(--bg2));
+ border:1px solid var(--line);border-radius:16px;padding:18px}
+.hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:4px}
+.hd h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;
+ font-size:19px;letter-spacing:.04em;margin:0}
+.hd .sub{font-size:12px;color:var(--muted)}
+#chart{width:100%;height:300px;display:block;margin-top:6px}
+.chart-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:12px 2px 2px;padding-top:12px;border-top:1px solid var(--line)}
+.lg{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+.lg .lgsw{width:11px;height:11px;border-radius:3px;flex:none}
+.lg .lgrk{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--muted2);min-width:14px;text-align:right}
+.lg .lgnm{color:var(--ink);font-weight:500}
+.lg .lgpt{font-family:'Space Mono',monospace;font-weight:700;color:var(--muted);font-size:11.5px}
+.lg.lead .lgnm{color:var(--gold);font-weight:700}
+.lg.lead .lgpt{color:var(--gold)}
+.lg.lead .lgrk{color:var(--gold)}
+.lg.muted .lgnm{color:var(--muted2)}
+.chart-foot{font-size:11.5px;color:var(--muted2);margin-top:2px}
+
+/* day scrubber */
+.scrub{display:flex;gap:8px;margin:26px 0 14px;flex-wrap:wrap}
+.daybtn{flex:1;min-width:128px;background:var(--surface);border:1px solid var(--line);
+ border-radius:12px;padding:11px 13px;cursor:pointer;text-align:left;color:var(--ink);
+ transition:.15s;font-family:inherit}
+.daybtn:hover{border-color:var(--line2)}
+.daybtn .d{font-family:'Anton',sans-serif;font-size:17px;text-transform:uppercase;letter-spacing:.03em}
+.daybtn .dt{font-size:11.5px;color:var(--muted);margin-top:1px}
+.daybtn.on{background:var(--goldbg);border-color:var(--goldd)}
+.daybtn.on .d{color:var(--gold)}
+
+.grid{display:grid;grid-template-columns:1.05fr 1fr;gap:16px;align-items:start}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+
+/* leaderboard */
+.lb-h{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 10px}
+.lb-h h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;font-size:18px;margin:0;letter-spacing:.04em}
+.lb-h .asof{font-size:12px;color:var(--gold)}
+.row{display:grid;grid-template-columns:30px 1fr auto;gap:12px;align-items:center;
+ padding:12px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;
+ background:var(--surface);transition:.35s cubic-bezier(.4,0,.2,1)}
+.row.lead{background:var(--goldbg);border-color:var(--goldd);box-shadow:inset 3px 0 0 var(--gold)}
+.rk{font-family:'Anton',sans-serif;font-size:22px;color:var(--muted2);text-align:center}
+.row.lead .rk{color:var(--gold)}
+.nm{font-weight:600;font-size:15px;line-height:1.1}
+.nm .delta{font-size:11.5px;color:var(--chalk);font-weight:600;margin-left:7px}
+.nm .delta.zero{color:var(--muted2)}
+.compbar{display:flex;gap:3px;margin-top:6px;height:6px}
+.compbar i{display:block;height:6px;border-radius:2px}
+.tot{font-family:'Anton',sans-serif;font-size:30px;line-height:1;text-align:right}
+.tot small{display:block;font-family:'Inter';font-weight:600;font-size:10px;letter-spacing:.18em;
+ color:var(--muted2);text-transform:uppercase;margin-top:2px}
+.row.lead .tot{color:var(--gold)}
+
+/* matches */
+.mtitle{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:18px;margin:0 2px 10px;letter-spacing:.04em}
+.match{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden;background:var(--surface)}
+.mh{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg2)}
+.grp{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--bg);
+ background:var(--chalk);padding:2px 7px;border-radius:5px}
+.teams{flex:1;font-weight:600;font-size:14px}
+.fasit{font-family:'Space Mono',monospace;font-weight:700;font-size:17px;color:var(--gold)}
+.fasit .ft{font-family:'Inter';font-size:9px;letter-spacing:.16em;color:var(--muted2);margin-left:6px;font-weight:600}
+.picks{display:flex;flex-wrap:wrap;gap:6px;padding:11px 12px}
+.pick{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:8px;
+ padding:5px 8px;font-size:12px;background:var(--bg2)}
+.pick .pn{color:var(--muted);max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick .ps{font-family:'Space Mono',monospace;font-weight:700;color:var(--ink)}
+.pick .pp{font-family:'Space Mono',monospace;font-size:11px;padding:1px 6px;border-radius:5px;font-weight:700}
+.p3{background:var(--goldbg);border-color:var(--goldd)}
+.p3 .pn{color:var(--gold)}.p3 .ps{color:var(--gold)}
+.p2{background:var(--goldbg);border-color:var(--goldd)}
+.p2 .pp{background:var(--gpp);color:var(--gold)}
+.p1{border-color:var(--line2)}
+.p1 .pp{background:#1d2c25;color:var(--chalk)}
+.p0{opacity:.5}
+.p0 .pp{background:#1a2420;color:var(--muted2)}
+.p3 .pp{background:var(--gpp);color:var(--gold)}
+.upcoming{padding:14px;color:var(--muted);font-size:13px;text-align:center;border:1px dashed var(--line2);border-radius:12px}
+.foot{margin-top:26px;font-size:11.5px;color:var(--muted2);line-height:1.6}
+.rstrip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:760px){.rstrip{grid-template-columns:repeat(2,1fr)}}
+.rcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 12px 13px;
+ display:flex;flex-direction:column;gap:9px;position:relative;overflow:hidden}
+.rcard.newest{border-color:var(--goldd);background:linear-gradient(180deg,var(--goldsoft),var(--surface))}
+.rcard .rtop{display:flex;align-items:center;justify-content:space-between}
+.rcard .rgrp{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;color:var(--bg);
+ background:var(--chalk);padding:2px 7px;border-radius:5px}
+.rcard.newest .rgrp{background:var(--gold)}
+.rcard .rday{font-size:10.5px;color:var(--muted2)}
+.rcard .rteam{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13.5px}
+.rcard .rteam .tn{font-weight:600;line-height:1.15}
+.rcard .rteam .sc{font-family:'Space Mono',monospace;font-weight:700;font-size:18px;color:var(--ink)}
+.rcard .rteam.win .tn{color:var(--ink)}
+.rcard .rteam.lose .tn{color:var(--muted)}
+.rcard .rteam.lose .sc{color:var(--muted)}
+.rcard .ftbadge{position:absolute;top:10px;right:10px;font-size:8.5px;letter-spacing:.16em;color:var(--muted2);font-weight:700}
+.recent h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;font-size:18px;margin:0;letter-spacing:.04em}
+/* climbers & fallers */
+.movers{display:flex;gap:8px;flex-wrap:wrap;margin:0 2px 12px}
+.mv{flex:1;min-width:150px;display:flex;align-items:center;gap:10px;border:1px solid var(--line);
+ border-radius:10px;padding:9px 12px;background:var(--surface)}
+.mv .ic{font-size:15px;font-family:'Anton',sans-serif}
+.mv.up{border-color:rgba(159,217,189,.4)}.mv.down{border-color:rgba(224,138,107,.4)}
+.mv.up .ic{color:#9fd9bd}.mv.down .ic{color:#e08a6b}
+.mv .mt{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2)}
+.mv .mn{font-weight:600;font-size:14px}
+.mv .delta-pl{font-family:'Space Mono',monospace;font-weight:700;margin-left:auto;font-size:15px}
+.mv.up .delta-pl{color:#9fd9bd}.mv.down .delta-pl{color:#e08a6b}
+.rkwrap{display:flex;flex-direction:column;align-items:center;gap:1px}
+.rmove{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;line-height:1}
+.rmove.up{color:#9fd9bd}.rmove.down{color:#e08a6b}.rmove.same{color:var(--muted2)}
+/* consensus inside played matches */
+.mcon{display:flex;align-items:center;gap:9px;padding:8px 14px;border-top:1px solid var(--line);
+ font-size:11.5px;color:var(--muted);background:#0d211c;line-height:1.4}
+.mcon .mbar{display:flex;height:7px;width:84px;min-width:84px;border-radius:4px;overflow:hidden;background:var(--bg2)}
+.mcon .mbar i{display:block;height:100%}
+.mcon .hero{color:var(--gold);font-weight:600}
+.pick .star{color:var(--gold);font-weight:700;font-size:11px}
+/* kommende kamper */
+.ustrip{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:760px){.ustrip{grid-template-columns:1fr}}
+.ucard{border:1px solid var(--line);border-radius:13px;background:var(--surface);overflow:hidden}
+.uhd{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--bg2)}
+.uhd .grp{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--bg);
+ background:var(--chalk);padding:2px 7px;border-radius:5px}
+.uteams{flex:1;font-weight:700;font-size:15px}
+.uwhen{font-size:11px;color:var(--muted);text-align:right;line-height:1.3}
+.uwhen b{display:block;color:var(--gold);font-family:'Space Mono',monospace;font-size:14px}
+.ucon{padding:13px 14px 4px}
+.conbar{display:flex;height:9px;border-radius:5px;overflow:hidden;background:var(--bg2);border:1px solid var(--line)}
+.conbar i{display:block;height:100%}
+.conlab{display:flex;justify-content:space-between;align-items:baseline;margin:8px 0 4px;font-size:11.5px;color:var(--muted)}
+.conlab .big{color:var(--ink);font-weight:600;font-size:13px}
+.reveal{display:block;margin:8px 14px 0;border:1px solid var(--line2);border-radius:9px;background:var(--bg2);
+ color:var(--ink);font-family:inherit;font-size:12.5px;font-weight:600;padding:9px;cursor:pointer;width:calc(100% - 28px);transition:.15s}
+.reveal:hover{border-color:var(--gold);color:var(--gold)}
+.utips{display:flex;flex-wrap:wrap;gap:6px;padding:11px 14px 14px}
+.utip{display:flex;gap:6px;align-items:center;font-size:12px;border:1px solid var(--line);border-radius:7px;padding:4px 8px;background:var(--bg2)}
+.utip .un{color:var(--muted);max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.utip .us{font-family:'Space Mono',monospace;font-weight:700;color:var(--ink)}
+.utip.contra{border-color:rgba(245,196,81,.5)}
+.utip.contra .un{color:var(--gold)}
+.upcoming-sec h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;font-size:18px;margin:0;letter-spacing:.04em}
+.lbright{display:flex;align-items:center;gap:10px}
+.sharebtn{background:var(--goldbg);border:1px solid var(--goldd);color:var(--gold);
+ font-family:inherit;font-weight:600;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer;white-space:nowrap;transition:.15s}
+.sharebtn:hover{background:var(--goldbg2)}
+.sharebtn:disabled{opacity:.6;cursor:default}
+.mv.spoon{border-color:rgba(190,140,90,.45)}
+.mv.spoon .ic{font-size:15px}
+.mv.spoon .delta-pl{color:#c79a6a}
+/* player stats — rich cards */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:11px}
+.statcard{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:13px 14px}
+.statcard.lead{border-color:var(--goldd);background:var(--goldbg)}
+.sct{display:flex;align-items:baseline;gap:9px}
+.sct .scrk{font-family:'Anton',sans-serif;font-size:16px;color:var(--muted2)}
+.statcard.lead .scrk{color:var(--gold)}
+.sct .scnm{font-weight:700;font-size:15px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sct .sctot{font-family:'Anton',sans-serif;font-size:24px;color:var(--ink)}
+.sct .sctot small{font-family:'Inter';font-weight:600;font-size:9px;color:var(--muted2);margin-left:2px}
+.statcard.lead .sctot{color:var(--gold)}
+.scbar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--bg2);margin:11px 0 7px}
+.scbar i{display:block;height:100%}
+.scnums{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted2);gap:4px}
+.scnums b{font-family:'Space Mono',monospace;font-size:12px}
+.scquick{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}
+.scquick span{font-size:10.5px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);
+ border-radius:6px;padding:3px 7px}
+.scquick .hero{color:var(--gold);border-color:var(--goldd);background:var(--goldbg)}
+.scform{display:flex;align-items:flex-end;gap:5px;margin-top:11px;height:40px}
+.scform .fl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);
+ align-self:flex-end;margin-bottom:12px;margin-right:2px}
+.fb{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;width:26px}
+.fb i{width:100%;background:rgba(159,217,189,.55);border-radius:2px 2px 0 0;min-height:3px}
+.statcard.lead .fb i{background:rgba(245,196,81,.6)}
+.fb em{font-style:normal;font-size:8px;color:var(--muted2);margin-top:3px}
+.scspec{margin-top:11px;font-size:11.5px;color:var(--muted);line-height:1.35;
+ background:var(--chalkbg);border:1px solid rgba(159,217,189,.22);border-radius:8px;padding:7px 9px}
+.scspec b{color:var(--chalk);font-weight:700}
+.statcard.lead .scspec{background:var(--goldbg);border-color:var(--goldd)}
+.statcard.lead .scspec b{color:var(--gold)}
+.sbest{margin-top:8px;font-size:11px;color:var(--muted)}
+.sbest .bl{color:var(--muted2);letter-spacing:.04em}
+.sbest b{font-family:'Space Mono',monospace;color:var(--ink)}
+.sbest .bk{color:var(--chalk);font-weight:600}
+.sbest.muted{color:var(--muted2);font-style:italic}
+.scpred{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;padding-top:9px;border-top:1px solid var(--line)}
+.scpred>div{display:flex;flex-direction:column;gap:1px;min-width:0}
+.scpred span{font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2)}
+.scpred b{font-size:12.5px;color:var(--ink);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scpred b.ph{color:var(--muted2);font-weight:400}
+.predsum{display:flex;flex-direction:column;gap:9px;margin:0 2px 14px;padding:13px 15px;
+ border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.predrow{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.predrow .pl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);min-width:90px}
+.pchip{font-size:12px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:7px;padding:3px 9px}
+.pchip b{color:var(--ink);font-weight:600}
+.pchip.top{border-color:var(--goldd);background:var(--goldbg)}
+.pchip.top b{color:var(--gold)}
+.pchip.ph{color:var(--muted2)}
+.statkey{display:flex;flex-wrap:wrap;gap:6px 16px;margin:12px 2px 2px;font-size:11px;color:var(--muted2)}
+.statkey span{display:inline-flex;align-items:center;gap:6px}
+.statkey .kd{width:10px;height:10px;border-radius:3px}
+.stats-sec h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;font-size:18px;margin:0;letter-spacing:.04em}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header>
+  <div class="title">
+   <div class="eyebrow">Gruppespill · USA · Canada · Mexico</div>
+   <h1 class="anton">VM-tipping <span class="yr">2026</span></h1>
+  </div>
+  <div class="live"><span class="dot"></span><span id="livetxt">LIVE</span></div>
+ </header>
+
+ <div class="legend">
+  <span class="lab">Poeng</span>
+  <span class="chip"><span class="sw" style="background:var(--gold)"></span>Riktig resultat <b style="color:var(--gold)">3p</b></span>
+  <span class="chip"><span class="sw" style="background:rgba(159,217,189,.3)"></span>Rett utfall <b style="color:var(--chalk)">1p</b></span>
+  <span class="chip"><span class="sw" style="background:rgba(234,242,238,.08)"></span>Bom <b style="color:#aebcb5">0p</b></span>
+ </div>
+
+ <div class="card">
+  <div class="hd"><h2>Poengløpet</h2><span class="sub" id="racemeta"></span></div>
+  <svg id="chart" viewBox="0 0 720 280" preserveAspectRatio="none"></svg>
+  <div class="chart-legend" id="chartLegend"></div>
+  <div class="chart-foot">Sammenlagt poeng etter hver spilledag. Topp 10 i farger (gull = leder), resten i grått.</div>
+ </div>
+
+ <div class="scrub" id="scrub"></div>
+
+ <div class="grid">
+  <div>
+   <div class="lb-h"><h2>Stillingen</h2><div class="lbright"><span class="asof" id="asof"></span><button id="shareBtn" class="sharebtn">📷 Del som bilde</button></div></div>
+   <div class="movers" id="movers"></div>
+   <div id="board"></div>
+  </div>
+  <div>
+   <h2 class="mtitle" id="mtitle">Kampene</h2>
+   <div id="matches"></div>
+  </div>
+ </div>
+
+ <div class="upcoming-sec">
+  <div class="lb-h" style="margin-top:30px"><h2>Kommende kamper</h2><span class="asof">Alles tips · skjult til avspark</span></div>
+  <div class="ustrip" id="upcoming"></div>
+ </div>
+
+ <div class="stats-sec">
+  <div class="lb-h" style="margin-top:30px"><h2>Spillerstatistikk</h2><span class="asof">12 spilte kamper</span></div>
+  <div class="predsum" id="predsum"></div>
+  <div class="statgrid" id="stats"></div>
+  <div class="statkey">
+   <span><span class="kd" style="background:#f5c451"></span>Blink (3p)</span>
+   <span><span class="kd" style="background:#c59be0"></span>Riktig differanse</span>
+   <span><span class="kd" style="background:#9fd9bd"></span>Riktig utfall (1p)</span>
+   <span><span class="kd" style="background:rgba(234,242,238,.18)"></span>Bom</span>
+  </div>
+ </div>
+
+ <div class="foot" id="foot"></div>
+</div>
+
+<script>
+const D = {"meta": {"1": {"h": "Mexico", "a": "Sør-Afrika", "g": "A"}, "3": {"h": "Canada", "a": "Bosnia-Hercegovina", "g": "B"}, "7": {"h": "Brasil", "a": "Marokko", "g": "C"}, "4": {"h": "USA", "a": "Paraguay", "g": "D"}, "10": {"h": "Tyskland", "a": "Curaçao", "g": "E"}, "11": {"h": "Nederland", "a": "Japan", "g": "F"}, "16": {"h": "Belgia", "a": "Egypt", "g": "G"}, "14": {"h": "Spania", "a": "Kapp Verde", "g": "H"}, "17": {"h": "Frankrike", "a": "Senegal", "g": "I"}, "19": {"h": "Argentina", "a": "Algerie", "g": "J"}, "23": {"h": "Portugal", "a": "DR Kongo", "g": "K"}, "22": {"h": "England", "a": "Kroatia", "g": "L"}, "2": {"h": "Sør-Korea", "a": "Tsjekkia", "g": "A"}, "8": {"h": "Qatar", "a": "Sveits", "g": "B"}, "5": {"h": "Haiti", "a": "Skottland", "g": "C"}, "6": {"h": "Australia", "a": "Tyrkia", "g": "D"}, "9": {"h": "Elfenbenskysten", "a": "Ecuador", "g": "E"}, "12": {"h": "Sverige", "a": "Tunisia", "g": "F"}, "15": {"h": "Iran", "a": "New Zealand", "g": "G"}, "13": {"h": "Saudi-Arabia", "a": "Uruguay", "g": "H"}, "18": {"h": "Irak", "a": "Norge", "g": "I"}, "20": {"h": "Østerrike", "a": "Jordan", "g": "J"}, "24": {"h": "Usbekistan", "a": "Colombia", "g": "K"}, "21": {"h": "Ghana", "a": "Panama", "g": "L"}, "25": {"h": "Tsjekkia", "a": "Sør-Afrika", "g": "A"}, "26": {"h": "Sveits", "a": "Bosnia-Hercegovina", "g": "B"}, "30": {"h": "Skottland", "a": "Marokko", "g": "C"}, "32": {"h": "USA", "a": "Australia", "g": "D"}, "33": {"h": "Tyskland", "a": "Elfenbenskysten", "g": "E"}, "35": {"h": "Nederland", "a": "Sverige", "g": "F"}, "39": {"h": "Belgia", "a": "Iran", "g": "G"}, "38": {"h": "Spania", "a": "Saudi-Arabia", "g": "H"}, "42": {"h": "Frankrike", "a": "Irak", "g": "I"}, "43": {"h": "Argentina", "a": "Østerrike", "g": "J"}, "47": {"h": "Portugal", "a": "Usbekistan", "g": "K"}, "45": {"h": "England", "a": "Ghana", "g": "L"}, "28": {"h": "Mexico", "a": "Sør-Korea", "g": "A"}, "27": {"h": "Canada", "a": "Qatar", "g": "B"}, "29": {"h": "Brasil", "a": "Haiti", "g": "C"}, "31": {"h": "Tyrkia", "a": "Paraguay", "g": "D"}, "34": {"h": "Ecuador", "a": "Curaçao", "g": "E"}, "36": {"h": "Tunisia", "a": "Japan", "g": "F"}, "40": {"h": "New Zealand", "a": "Egypt", "g": "G"}, "37": {"h": "Uruguay", "a": "Kapp Verde", "g": "H"}, "41": {"h": "Norge", "a": "Senegal", "g": "I"}, "44": {"h": "Jordan", "a": "Algerie", "g": "J"}, "48": {"h": "Colombia", "a": "DR Kongo", "g": "K"}, "46": {"h": "Panama", "a": "Kroatia", "g": "L"}, "53": {"h": "Tsjekkia", "a": "Mexico", "g": "A"}, "51": {"h": "Sveits", "a": "Canada", "g": "B"}, "49": {"h": "Skottland", "a": "Brasil", "g": "C"}, "59": {"h": "Tyrkia", "a": "USA", "g": "D"}, "55": {"h": "Curaçao", "a": "Elfenbenskysten", "g": "E"}, "57": {"h": "Japan", "a": "Sverige", "g": "F"}, "63": {"h": "Egypt", "a": "Iran", "g": "G"}, "65": {"h": "Kapp Verde", "a": "Saudi-Arabia", "g": "H"}, "61": {"h": "Norge", "a": "Frankrike", "g": "I"}, "69": {"h": "Algerie", "a": "Østerrike", "g": "J"}, "71": {"h": "Colombia", "a": "Portugal", "g": "K"}, "67": {"h": "Panama", "a": "England", "g": "L"}, "54": {"h": "Sør-Afrika", "a": "Sør-Korea", "g": "A"}, "52": {"h": "Bosnia-Hercegovina", "a": "Qatar", "g": "B"}, "50": {"h": "Marokko", "a": "Haiti", "g": "C"}, "60": {"h": "Paraguay", "a": "Australia", "g": "D"}, "56": {"h": "Ecuador", "a": "Tyskland", "g": "E"}, "58": {"h": "Tunisia", "a": "Nederland", "g": "F"}, "64": {"h": "New Zealand", "a": "Belgia", "g": "G"}, "66": {"h": "Uruguay", "a": "Spania", "g": "H"}, "62": {"h": "Senegal", "a": "Irak", "g": "I"}, "70": {"h": "Jordan", "a": "Argentina", "g": "J"}, "72": {"h": "DR Kongo", "a": "Usbekistan", "g": "K"}, "68": {"h": "Kroatia", "a": "Ghana", "g": "L"}}, "actual": {"1": [2, 0], "2": [2, 1], "3": [1, 1], "4": [4, 1], "5": [0, 1], "6": [2, 0], "7": [1, 1], "8": [1, 1], "9": [1, 0], "10": [7, 1], "11": [2, 2], "12": [5, 1]}, "days": [{"label": "Dag 1", "date": "tor 11. juni", "matches": [1]}, {"label": "Dag 2", "date": "fre 12. juni", "matches": [2, 3]}, {"label": "Dag 3", "date": "lør 13. juni", "matches": [4, 8, 7]}, {"label": "Dag 4", "date": "søn 14. juni", "matches": [5, 6]}, {"label": "Dag 5", "date": "natt til 15. juni", "matches": [10, 11, 9, 12]}], "played": [1, 2, 3, 4, 8, 7, 5, 6, 10, 11, 9, 12], "detail": {"Roger": {"1": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}, "2": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "3": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "4": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}, "8": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "7": {"p1": 2, "p2": 0, "pts": 0, "comp": [0, 0]}, "5": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "6": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "10": {"p1": 3, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "9": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}}, "Jo": {"1": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}, "2": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "3": {"p1": 2, "p2": 0, "pts": 0, "comp": [0, 0]}, "4": {"p1": 3, "p2": 1, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 3, "pts": 0, "comp": [0, 0]}, "7": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "5": {"p1": 0, "p2": 2, "pts": 1, "comp": [1, 0]}, "6": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "10": {"p1": 4, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "9": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 2, "p2": 0, "pts": 1, "comp": [1, 0]}}, "Mats": {"1": {"p1": 3, "p2": 1, "pts": 1, "comp": [1, 0]}, "2": {"p1": 3, "p2": 3, "pts": 0, "comp": [0, 0]}, "3": {"p1": 3, "p2": 2, "pts": 0, "comp": [0, 0]}, "4": {"p1": 3, "p2": 2, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 3, "pts": 0, "comp": [0, 0]}, "7": {"p1": 4, "p2": 3, "pts": 0, "comp": [0, 0]}, "5": {"p1": 1, "p2": 3, "pts": 1, "comp": [1, 0]}, "6": {"p1": 1, "p2": 4, "pts": 0, "comp": [0, 0]}, "10": {"p1": 4, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 3, "p2": 3, "pts": 1, "comp": [1, 0]}, "9": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}}, "Reppe": {"1": {"p1": 3, "p2": 0, "pts": 1, "comp": [1, 0]}, "2": {"p1": 2, "p2": 1, "pts": 3, "comp": [1, 1]}, "3": {"p1": 3, "p2": 0, "pts": 0, "comp": [0, 0]}, "4": {"p1": 2, "p2": 0, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 3, "pts": 0, "comp": [0, 0]}, "7": {"p1": 1, "p2": 1, "pts": 3, "comp": [1, 1]}, "5": {"p1": 0, "p2": 3, "pts": 1, "comp": [1, 0]}, "6": {"p1": 0, "p2": 1, "pts": 0, "comp": [0, 0]}, "10": {"p1": 3, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 1, "p2": 0, "pts": 0, "comp": [0, 0]}, "9": {"p1": 0, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}}, "Odda": {"1": {"p1": 2, "p2": 0, "pts": 3, "comp": [1, 1]}, "2": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "3": {"p1": 1, "p2": 1, "pts": 3, "comp": [1, 1]}, "4": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "7": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "5": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "6": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "10": {"p1": 3, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "9": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}}, "Stien": {"1": {"p1": 2, "p2": 0, "pts": 3, "comp": [1, 1]}, "2": {"p1": 0, "p2": 1, "pts": 0, "comp": [0, 0]}, "3": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "4": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "8": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "7": {"p1": 2, "p2": 0, "pts": 0, "comp": [0, 0]}, "5": {"p1": 0, "p2": 2, "pts": 1, "comp": [1, 0]}, "6": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "10": {"p1": 3, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "9": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}}, "Robertsen": {"1": {"p1": 2, "p2": 0, "pts": 3, "comp": [1, 1]}, "2": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "3": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "4": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 3, "pts": 0, "comp": [0, 0]}, "7": {"p1": 1, "p2": 1, "pts": 3, "comp": [1, 1]}, "5": {"p1": 0, "p2": 2, "pts": 1, "comp": [1, 0]}, "6": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "10": {"p1": 6, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 1, "p2": 1, "pts": 1, "comp": [1, 0]}, "9": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}}, "Berg": {"1": {"p1": 2.0, "p2": 0.0, "pts": 3, "comp": [1, 1]}, "2": {"p1": 1.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}, "3": {"p1": 1.0, "p2": 0.0, "pts": 0, "comp": [0, 0]}, "4": {"p1": 2.0, "p2": 1.0, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0.0, "p2": 2.0, "pts": 0, "comp": [0, 0]}, "7": {"p1": 1.0, "p2": 1.0, "pts": 3, "comp": [1, 1]}, "5": {"p1": 0.0, "p2": 2.0, "pts": 1, "comp": [1, 0]}, "6": {"p1": 0.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}, "10": {"p1": 3.0, "p2": 0.0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2.0, "p2": 0.0, "pts": 0, "comp": [0, 0]}, "9": {"p1": 1.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}, "12": {"p1": 1.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}}, "Per Henrik": {"1": {"p1": 2, "p2": 0, "pts": 3, "comp": [1, 1]}, "2": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "3": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "4": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "8": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "7": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "5": {"p1": 0, "p2": 3, "pts": 1, "comp": [1, 0]}, "6": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "10": {"p1": 4, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "9": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}}, "Haggis": {"1": {"p1": 3, "p2": 0, "pts": 1, "comp": [1, 0]}, "2": {"p1": 0, "p2": 0, "pts": 0, "comp": [0, 0]}, "3": {"p1": 1, "p2": 1, "pts": 3, "comp": [1, 1]}, "4": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 4, "pts": 0, "comp": [0, 0]}, "7": {"p1": 2, "p2": 0, "pts": 0, "comp": [0, 0]}, "5": {"p1": 1, "p2": 3, "pts": 1, "comp": [1, 0]}, "6": {"p1": 1, "p2": 3, "pts": 0, "comp": [0, 0]}, "10": {"p1": 4, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 3, "p2": 2, "pts": 0, "comp": [0, 0]}, "9": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 2, "p2": 2, "pts": 0, "comp": [0, 0]}}, "Johannes": {"1": {"p1": 3.0, "p2": 1.0, "pts": 1, "comp": [1, 0]}, "2": {"p1": 1.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}, "3": {"p1": 0.0, "p2": 0.0, "pts": 1, "comp": [1, 0]}, "4": {"p1": 2.0, "p2": 1.0, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0.0, "p2": 2.0, "pts": 0, "comp": [0, 0]}, "7": {"p1": 3.0, "p2": 0.0, "pts": 0, "comp": [0, 0]}, "5": {"p1": 0.0, "p2": 2.0, "pts": 1, "comp": [1, 0]}, "6": {"p1": 1.0, "p2": 2.0, "pts": 0, "comp": [0, 0]}, "10": {"p1": 7.0, "p2": 0.0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2.0, "p2": 0.0, "pts": 0, "comp": [0, 0]}, "9": {"p1": 2.0, "p2": 1.0, "pts": 1, "comp": [1, 0]}, "12": {"p1": 1.0, "p2": 0.0, "pts": 1, "comp": [1, 0]}}, "Thomas": {"1": {"p1": 2, "p2": 0, "pts": 3, "comp": [1, 1]}, "2": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "3": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "4": {"p1": 3, "p2": 0, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 5, "pts": 0, "comp": [0, 0]}, "7": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "5": {"p1": 0, "p2": 3, "pts": 1, "comp": [1, 0]}, "6": {"p1": 0, "p2": 1, "pts": 0, "comp": [0, 0]}, "10": {"p1": 4, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 1, "p2": 0, "pts": 0, "comp": [0, 0]}, "9": {"p1": 3, "p2": 1, "pts": 1, "comp": [1, 0]}, "12": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}}, "MJ": {"1": {"p1": 2.0, "p2": 0.0, "pts": 3, "comp": [1, 1]}, "2": {"p1": 1.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}, "3": {"p1": 2.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}, "4": {"p1": 2.0, "p2": 0.0, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0.0, "p2": 2.0, "pts": 0, "comp": [0, 0]}, "7": {"p1": 2.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}, "5": {"p1": 1.0, "p2": 2.0, "pts": 1, "comp": [1, 0]}, "6": {"p1": 1.0, "p2": 2.0, "pts": 0, "comp": [0, 0]}, "10": {"p1": 4.0, "p2": 0.0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}, "9": {"p1": 1.0, "p2": 1.0, "pts": 0, "comp": [0, 0]}, "12": {"p1": 2.0, "p2": 0.0, "pts": 1, "comp": [1, 0]}}, "Øyvind": {"1": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}, "2": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}, "3": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "4": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "7": {"p1": 2, "p2": 0, "pts": 0, "comp": [0, 0]}, "5": {"p1": 0, "p2": 2, "pts": 1, "comp": [1, 0]}, "6": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "10": {"p1": 6, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 1, "p2": 1, "pts": 1, "comp": [1, 0]}, "9": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}}, "Trygve": {"1": {"p1": 2, "p2": 0, "pts": 3, "comp": [1, 1]}, "2": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "3": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "4": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "7": {"p1": 3, "p2": 2, "pts": 0, "comp": [0, 0]}, "5": {"p1": 0, "p2": 2, "pts": 1, "comp": [1, 0]}, "6": {"p1": 0, "p2": 3, "pts": 0, "comp": [0, 0]}, "10": {"p1": 3, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 3, "p2": 1, "pts": 0, "comp": [0, 0]}, "9": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "12": {"p1": 1, "p2": 3, "pts": 0, "comp": [0, 0]}}, "Ole": {"1": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}, "2": {"p1": 2, "p2": 1, "pts": 3, "comp": [1, 1]}, "3": {"p1": 1, "p2": 1, "pts": 3, "comp": [1, 1]}, "4": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "7": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "5": {"p1": 0, "p2": 3, "pts": 1, "comp": [1, 0]}, "6": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "10": {"p1": 5, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2, "p2": 0, "pts": 0, "comp": [0, 0]}, "9": {"p1": 0, "p2": 1, "pts": 0, "comp": [0, 0]}, "12": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}}, "Jens": {"1": {"p1": 2, "p2": 1, "pts": 1, "comp": [1, 0]}, "2": {"p1": 1, "p2": 1, "pts": 0, "comp": [0, 0]}, "3": {"p1": 1, "p2": 1, "pts": 3, "comp": [1, 1]}, "4": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}, "8": {"p1": 0, "p2": 3, "pts": 0, "comp": [0, 0]}, "7": {"p1": 1, "p2": 1, "pts": 3, "comp": [1, 1]}, "5": {"p1": 0, "p2": 2, "pts": 1, "comp": [1, 0]}, "6": {"p1": 1, "p2": 2, "pts": 0, "comp": [0, 0]}, "10": {"p1": 5, "p2": 0, "pts": 1, "comp": [1, 0]}, "11": {"p1": 2, "p2": 1, "pts": 0, "comp": [0, 0]}, "9": {"p1": 0, "p2": 2, "pts": 0, "comp": [0, 0]}, "12": {"p1": 1, "p2": 0, "pts": 1, "comp": [1, 0]}}}, "cum": {"Roger": [{"day": 1, "tot": 1}, {"day": 0, "tot": 1}, {"day": 1, "tot": 2}, {"day": 0, "tot": 2}, {"day": 2, "tot": 4}], "Jo": [{"day": 1, "tot": 1}, {"day": 0, "tot": 1}, {"day": 1, "tot": 2}, {"day": 1, "tot": 3}, {"day": 2, "tot": 5}], "Mats": [{"day": 1, "tot": 1}, {"day": 0, "tot": 1}, {"day": 1, "tot": 2}, {"day": 1, "tot": 3}, {"day": 3, "tot": 6}], "Reppe": [{"day": 1, "tot": 1}, {"day": 3, "tot": 4}, {"day": 4, "tot": 8}, {"day": 1, "tot": 9}, {"day": 2, "tot": 11}], "Odda": [{"day": 3, "tot": 3}, {"day": 3, "tot": 6}, {"day": 1, "tot": 7}, {"day": 0, "tot": 7}, {"day": 2, "tot": 9}], "Stien": [{"day": 3, "tot": 3}, {"day": 0, "tot": 3}, {"day": 0, "tot": 3}, {"day": 1, "tot": 4}, {"day": 2, "tot": 6}], "Robertsen": [{"day": 3, "tot": 3}, {"day": 0, "tot": 3}, {"day": 4, "tot": 7}, {"day": 1, "tot": 8}, {"day": 2, "tot": 10}], "Berg": [{"day": 3, "tot": 3}, {"day": 0, "tot": 3}, {"day": 4, "tot": 7}, {"day": 1, "tot": 8}, {"day": 1, "tot": 9}], "Per Henrik": [{"day": 3, "tot": 3}, {"day": 0, "tot": 3}, {"day": 0, "tot": 3}, {"day": 1, "tot": 4}, {"day": 2, "tot": 6}], "Haggis": [{"day": 1, "tot": 1}, {"day": 3, "tot": 4}, {"day": 1, "tot": 5}, {"day": 1, "tot": 6}, {"day": 1, "tot": 7}], "Johannes": [{"day": 1, "tot": 1}, {"day": 1, "tot": 2}, {"day": 1, "tot": 3}, {"day": 1, "tot": 4}, {"day": 3, "tot": 7}], "Thomas": [{"day": 3, "tot": 3}, {"day": 0, "tot": 3}, {"day": 1, "tot": 4}, {"day": 1, "tot": 5}, {"day": 3, "tot": 8}], "MJ": [{"day": 3, "tot": 3}, {"day": 0, "tot": 3}, {"day": 1, "tot": 4}, {"day": 1, "tot": 5}, {"day": 2, "tot": 7}], "Øyvind": [{"day": 1, "tot": 1}, {"day": 1, "tot": 2}, {"day": 1, "tot": 3}, {"day": 1, "tot": 4}, {"day": 3, "tot": 7}], "Trygve": [{"day": 3, "tot": 3}, {"day": 0, "tot": 3}, {"day": 1, "tot": 4}, {"day": 1, "tot": 5}, {"day": 1, "tot": 6}], "Ole": [{"day": 1, "tot": 1}, {"day": 6, "tot": 7}, {"day": 1, "tot": 8}, {"day": 1, "tot": 9}, {"day": 1, "tot": 10}], "Jens": [{"day": 1, "tot": 1}, {"day": 3, "tot": 4}, {"day": 4, "tot": 8}, {"day": 1, "tot": 9}, {"day": 2, "tot": 11}]}, "players": ["Roger", "Jo", "Mats", "Reppe", "Odda", "Stien", "Robertsen", "Berg", "Per Henrik", "Haggis", "Johannes", "Thomas", "MJ", "Øyvind", "Trygve", "Ole", "Jens"], "totals": {"Roger": 4, "Jo": 5, "Mats": 6, "Reppe": 11, "Odda": 9, "Stien": 6, "Robertsen": 10, "Berg": 9, "Per Henrik": 6, "Haggis": 7, "Johannes": 7, "Thomas": 8, "MJ": 7, "Øyvind": 7, "Trygve": 6, "Ole": 10, "Jens": 11}, "empty": [], "recent": [{"nr": 6, "h": "Australia", "a": "Tyrkia", "g": "D", "s1": 2, "s2": 0, "day": "søn 14. juni"}, {"nr": 5, "h": "Haiti", "a": "Skottland", "g": "C", "s1": 0, "s2": 1, "day": "søn 14. juni"}, {"nr": 7, "h": "Brasil", "a": "Marokko", "g": "C", "s1": 1, "s2": 1, "day": "lør 13. juni"}, {"nr": 8, "h": "Qatar", "a": "Sveits", "g": "B", "s1": 1, "s2": 1, "day": "lør 13. juni"}, {"nr": 4, "h": "USA", "a": "Paraguay", "g": "D", "s1": 4, "s2": 1, "day": "lør 13. juni"}], "ranks": [{"Berg": 1, "MJ": 1, "Odda": 1, "Per Henrik": 1, "Robertsen": 1, "Stien": 1, "Thomas": 1, "Trygve": 1, "Haggis": 9, "Jens": 9, "Jo": 9, "Johannes": 9, "Mats": 9, "Ole": 9, "Reppe": 9, "Roger": 9, "Øyvind": 9}, {"Ole": 1, "Odda": 2, "Haggis": 3, "Jens": 3, "Reppe": 3, "Berg": 6, "MJ": 6, "Per Henrik": 6, "Robertsen": 6, "Stien": 6, "Thomas": 6, "Trygve": 6, "Johannes": 13, "Øyvind": 13, "Jo": 15, "Mats": 15, "Roger": 15}, {"Jens": 1, "Ole": 1, "Reppe": 1, "Berg": 4, "Odda": 4, "Robertsen": 4, "Haggis": 7, "MJ": 8, "Thomas": 8, "Trygve": 8, "Johannes": 11, "Per Henrik": 11, "Stien": 11, "Øyvind": 11, "Jo": 15, "Mats": 15, "Roger": 15}, {"Jens": 1, "Ole": 1, "Reppe": 1, "Berg": 4, "Robertsen": 4, "Odda": 6, "Haggis": 7, "MJ": 8, "Thomas": 8, "Trygve": 8, "Johannes": 11, "Per Henrik": 11, "Stien": 11, "Øyvind": 11, "Jo": 15, "Mats": 15, "Roger": 17}, {"Jens": 1, "Reppe": 1, "Ole": 3, "Robertsen": 3, "Berg": 5, "Odda": 5, "Thomas": 7, "Haggis": 8, "Johannes": 8, "MJ": 8, "Øyvind": 8, "Mats": 12, "Per Henrik": 12, "Stien": 12, "Trygve": 12, "Jo": 16, "Roger": 17}], "consensus": {"1": {"H": 17, "U": 0, "B": 0, "n": 17}, "2": {"H": 3, "U": 13, "B": 1, "n": 17}, "3": {"H": 9, "U": 5, "B": 3, "n": 17}, "4": {"H": 15, "U": 2, "B": 0, "n": 17}, "5": {"H": 0, "U": 2, "B": 15, "n": 17}, "6": {"H": 0, "U": 2, "B": 15, "n": 17}, "7": {"H": 11, "U": 4, "B": 2, "n": 17}, "8": {"H": 0, "U": 0, "B": 17, "n": 17}, "9": {"H": 2, "U": 11, "B": 4, "n": 17}, "10": {"H": 17, "U": 0, "B": 0, "n": 17}, "11": {"H": 14, "U": 3, "B": 0, "n": 17}, "12": {"H": 12, "U": 4, "B": 1, "n": 17}, "13": {"H": 0, "U": 4, "B": 13, "n": 17}, "14": {"H": 17, "U": 0, "B": 0, "n": 17}, "15": {"H": 10, "U": 7, "B": 0, "n": 17}, "16": {"H": 16, "U": 1, "B": 0, "n": 17}, "17": {"H": 16, "U": 1, "B": 0, "n": 17}, "18": {"H": 0, "U": 0, "B": 16, "n": 16}, "19": {"H": 17, "U": 0, "B": 0, "n": 17}, "20": {"H": 16, "U": 0, "B": 0, "n": 16}, "21": {"H": 9, "U": 5, "B": 2, "n": 16}, "22": {"H": 15, "U": 2, "B": 0, "n": 17}, "23": {"H": 17, "U": 0, "B": 0, "n": 17}, "24": {"H": 0, "U": 0, "B": 16, "n": 16}, "25": {"H": 13, "U": 3, "B": 1, "n": 17}, "26": {"H": 14, "U": 2, "B": 1, "n": 17}, "27": {"H": 16, "U": 1, "B": 0, "n": 17}, "28": {"H": 7, "U": 8, "B": 2, "n": 17}, "29": {"H": 17, "U": 0, "B": 0, "n": 17}, "30": {"H": 0, "U": 5, "B": 12, "n": 17}, "31": {"H": 9, "U": 6, "B": 2, "n": 17}, "32": {"H": 13, "U": 4, "B": 0, "n": 17}, "33": {"H": 16, "U": 1, "B": 0, "n": 17}, "34": {"H": 16, "U": 1, "B": 0, "n": 17}, "35": {"H": 16, "U": 1, "B": 0, "n": 17}, "36": {"H": 0, "U": 3, "B": 14, "n": 17}, "37": {"H": 17, "U": 0, "B": 0, "n": 17}, "38": {"H": 17, "U": 0, "B": 0, "n": 17}, "39": {"H": 16, "U": 1, "B": 0, "n": 17}, "40": {"H": 0, "U": 4, "B": 13, "n": 17}, "41": {"H": 12, "U": 5, "B": 0, "n": 17}, "42": {"H": 17, "U": 0, "B": 0, "n": 17}, "43": {"H": 15, "U": 1, "B": 1, "n": 17}, "44": {"H": 0, "U": 2, "B": 15, "n": 17}, "45": {"H": 15, "U": 2, "B": 0, "n": 17}, "46": {"H": 0, "U": 1, "B": 16, "n": 17}, "47": {"H": 17, "U": 0, "B": 0, "n": 17}, "48": {"H": 17, "U": 0, "B": 0, "n": 17}, "49": {"H": 0, "U": 0, "B": 17, "n": 17}, "50": {"H": 17, "U": 0, "B": 0, "n": 17}, "51": {"H": 9, "U": 8, "B": 0, "n": 17}, "52": {"H": 14, "U": 2, "B": 1, "n": 17}, "53": {"H": 0, "U": 2, "B": 15, "n": 17}, "54": {"H": 1, "U": 4, "B": 12, "n": 17}, "55": {"H": 0, "U": 1, "B": 16, "n": 17}, "56": {"H": 0, "U": 1, "B": 16, "n": 17}, "57": {"H": 11, "U": 4, "B": 2, "n": 17}, "58": {"H": 1, "U": 1, "B": 15, "n": 17}, "59": {"H": 3, "U": 7, "B": 7, "n": 17}, "60": {"H": 5, "U": 10, "B": 1, "n": 16}, "61": {"H": 1, "U": 4, "B": 12, "n": 17}, "62": {"H": 15, "U": 2, "B": 0, "n": 17}, "63": {"H": 6, "U": 9, "B": 2, "n": 17}, "64": {"H": 0, "U": 1, "B": 16, "n": 17}, "65": {"H": 1, "U": 4, "B": 12, "n": 17}, "66": {"H": 0, "U": 3, "B": 14, "n": 17}, "67": {"H": 0, "U": 0, "B": 17, "n": 17}, "68": {"H": 13, "U": 3, "B": 1, "n": 17}, "69": {"H": 1, "U": 6, "B": 10, "n": 17}, "70": {"H": 0, "U": 0, "B": 17, "n": 17}, "71": {"H": 0, "U": 9, "B": 8, "n": 17}, "72": {"H": 10, "U": 6, "B": 1, "n": 17}}, "upcoming": [{"nr": 14, "h": "Spania", "a": "Kapp Verde", "g": "H", "time": "18:00", "day": "man 15. juni", "picks": [{"p": "Roger", "p1": 3, "p2": 0}, {"p": "Jo", "p1": 3, "p2": 0}, {"p": "Mats", "p1": 5, "p2": 0}, {"p": "Reppe", "p1": 3, "p2": 0}, {"p": "Odda", "p1": 2, "p2": 0}, {"p": "Stien", "p1": 4, "p2": 0}, {"p": "Robertsen", "p1": 6, "p2": 0}, {"p": "Berg", "p1": 5.0, "p2": 0.0}, {"p": "Per Henrik", "p1": 3, "p2": 0}, {"p": "Haggis", "p1": 4, "p2": 0}, {"p": "Johannes", "p1": 6.0, "p2": 0.0}, {"p": "Thomas", "p1": 5, "p2": 0}, {"p": "MJ", "p1": 4.0, "p2": 0.0}, {"p": "Øyvind", "p1": 7, "p2": 0}, {"p": "Trygve", "p1": 5, "p2": 0}, {"p": "Ole", "p1": 4, "p2": 0}, {"p": "Jens", "p1": 6, "p2": 1}]}, {"nr": 16, "h": "Belgia", "a": "Egypt", "g": "G", "time": "21:00", "day": "man 15. juni", "picks": [{"p": "Roger", "p1": 2, "p2": 0}, {"p": "Jo", "p1": 2, "p2": 0}, {"p": "Mats", "p1": 3, "p2": 0}, {"p": "Reppe", "p1": 2, "p2": 1}, {"p": "Odda", "p1": 2, "p2": 0}, {"p": "Stien", "p1": 2, "p2": 1}, {"p": "Robertsen", "p1": 2, "p2": 1}, {"p": "Berg", "p1": 1.0, "p2": 1.0}, {"p": "Per Henrik", "p1": 2, "p2": 0}, {"p": "Haggis", "p1": 2, "p2": 0}, {"p": "Johannes", "p1": 3.0, "p2": 1.0}, {"p": "Thomas", "p1": 2, "p2": 1}, {"p": "MJ", "p1": 2.0, "p2": 1.0}, {"p": "Øyvind", "p1": 3, "p2": 0}, {"p": "Trygve", "p1": 2, "p2": 1}, {"p": "Ole", "p1": 1, "p2": 0}, {"p": "Jens", "p1": 3, "p2": 0}]}, {"nr": 13, "h": "Saudi-Arabia", "a": "Uruguay", "g": "H", "time": "00:00", "day": "tir 16. juni", "picks": [{"p": "Roger", "p1": 0, "p2": 2}, {"p": "Jo", "p1": 0, "p2": 2}, {"p": "Mats", "p1": 1, "p2": 4}, {"p": "Reppe", "p1": 0, "p2": 3}, {"p": "Odda", "p1": 1, "p2": 2}, {"p": "Stien", "p1": 0, "p2": 2}, {"p": "Robertsen", "p1": 1, "p2": 1}, {"p": "Berg", "p1": 1.0, "p2": 1.0}, {"p": "Per Henrik", "p1": 1, "p2": 2}, {"p": "Haggis", "p1": 0, "p2": 1}, {"p": "Johannes", "p1": 1.0, "p2": 3.0}, {"p": "Thomas", "p1": 2, "p2": 2}, {"p": "MJ", "p1": 0.0, "p2": 2.0}, {"p": "Øyvind", "p1": 0, "p2": 1}, {"p": "Trygve", "p1": 0, "p2": 3}, {"p": "Ole", "p1": 1, "p2": 2}, {"p": "Jens", "p1": 0, "p2": 0}]}, {"nr": 15, "h": "Iran", "a": "New Zealand", "g": "G", "time": "03:00", "day": "tir 16. juni", "picks": [{"p": "Roger", "p1": 2, "p2": 0}, {"p": "Jo", "p1": 1, "p2": 1}, {"p": "Mats", "p1": 2, "p2": 0}, {"p": "Reppe", "p1": 3, "p2": 0}, {"p": "Odda", "p1": 2, "p2": 1}, {"p": "Stien", "p1": 2, "p2": 0}, {"p": "Robertsen", "p1": 0, "p2": 0}, {"p": "Berg", "p1": 2.0, "p2": 2.0}, {"p": "Per Henrik", "p1": 2, "p2": 1}, {"p": "Haggis", "p1": 1, "p2": 0}, {"p": "Johannes", "p1": 1.0, "p2": 1.0}, {"p": "Thomas", "p1": 1, "p2": 0}, {"p": "MJ", "p1": 2.0, "p2": 0.0}, {"p": "Øyvind", "p1": 1, "p2": 0}, {"p": "Trygve", "p1": 2, "p2": 2}, {"p": "Ole", "p1": 1, "p2": 1}, {"p": "Jens", "p1": 1, "p2": 1}]}], "kickoff": {"1": {"iso": "2026-06-11T21:00:00", "time": "21:00", "day": "tor 11. juni", "ts": 1781211600.0}, "3": {"iso": "2026-06-12T21:00:00", "time": "21:00", "day": "fre 12. juni", "ts": 1781298000.0}, "7": {"iso": "2026-06-14T00:00:00", "time": "00:00", "day": "søn 14. juni", "ts": 1781395200.0}, "4": {"iso": "2026-06-13T03:00:00", "time": "03:00", "day": "lør 13. juni", "ts": 1781319600.0}, "10": {"iso": "2026-06-14T19:00:00", "time": "19:00", "day": "søn 14. juni", "ts": 1781463600.0}, "11": {"iso": "2026-06-14T22:00:00", "time": "22:00", "day": "søn 14. juni", "ts": 1781474400.0}, "16": {"iso": "2026-06-15T21:00:00", "time": "21:00", "day": "man 15. juni", "ts": 1781557200.0}, "14": {"iso": "2026-06-15T18:00:00", "time": "18:00", "day": "man 15. juni", "ts": 1781546400.0}, "17": {"iso": "2026-06-16T21:00:00", "time": "21:00", "day": "tir 16. juni", "ts": 1781643600.0}, "19": {"iso": "2026-06-17T03:00:00", "time": "03:00", "day": "ons 17. juni", "ts": 1781665200.0}, "23": {"iso": "2026-06-17T19:00:00", "time": "19:00", "day": "ons 17. juni", "ts": 1781722800.0}, "22": {"iso": "2026-06-17T22:00:00", "time": "22:00", "day": "ons 17. juni", "ts": 1781733600.0}, "2": {"iso": "2026-06-12T04:00:00", "time": "04:00", "day": "fre 12. juni", "ts": 1781236800.0}, "8": {"iso": "2026-06-13T21:00:00", "time": "21:00", "day": "lør 13. juni", "ts": 1781384400.0}, "5": {"iso": "2026-06-14T03:00:00", "time": "03:00", "day": "søn 14. juni", "ts": 1781406000.0}, "6": {"iso": "2026-06-14T06:00:00", "time": "06:00", "day": "søn 14. juni", "ts": 1781416800.0}, "9": {"iso": "2026-06-15T01:00:00", "time": "01:00", "day": "man 15. juni", "ts": 1781485200.0}, "12": {"iso": "2026-06-15T04:00:00", "time": "04:00", "day": "man 15. juni", "ts": 1781496000.0}, "15": {"iso": "2026-06-16T03:00:00", "time": "03:00", "day": "tir 16. juni", "ts": 1781578800.0}, "13": {"iso": "2026-06-16T00:00:00", "time": "00:00", "day": "tir 16. juni", "ts": 1781568000.0}, "18": {"iso": "2026-06-17T00:00:00", "time": "00:00", "day": "ons 17. juni", "ts": 1781654400.0}, "20": {"iso": "2026-06-17T06:00:00", "time": "06:00", "day": "ons 17. juni", "ts": 1781676000.0}, "24": {"iso": "2026-06-18T04:00:00", "time": "04:00", "day": "tor 18. juni", "ts": 1781755200.0}, "21": {"iso": "2026-06-18T01:00:00", "time": "01:00", "day": "tor 18. juni", "ts": 1781744400.0}, "25": {"iso": "2026-06-18T18:00:00", "time": "18:00", "day": "tor 18. juni", "ts": 1781805600.0}, "26": {"iso": "2026-06-18T21:00:00", "time": "21:00", "day": "tor 18. juni", "ts": 1781816400.0}, "30": {"iso": "2026-06-20T00:00:00", "time": "00:00", "day": "lør 20. juni", "ts": 1781913600.0}, "32": {"iso": "2026-06-19T21:00:00", "time": "21:00", "day": "fre 19. juni", "ts": 1781902800.0}, "33": {"iso": "2026-06-20T22:00:00", "time": "22:00", "day": "lør 20. juni", "ts": 1781992800.0}, "35": {"iso": "2026-06-20T19:00:00", "time": "19:00", "day": "lør 20. juni", "ts": 1781982000.0}, "39": {"iso": "2026-06-21T21:00:00", "time": "21:00", "day": "søn 21. juni", "ts": 1782075600.0}, "38": {"iso": "2026-06-21T18:00:00", "time": "18:00", "day": "søn 21. juni", "ts": 1782064800.0}, "42": {"iso": "2026-06-22T23:00:00", "time": "23:00", "day": "man 22. juni", "ts": 1782169200.0}, "43": {"iso": "2026-06-22T19:00:00", "time": "19:00", "day": "man 22. juni", "ts": 1782154800.0}, "47": {"iso": "2026-06-23T19:00:00", "time": "19:00", "day": "tir 23. juni", "ts": 1782241200.0}, "45": {"iso": "2026-06-23T22:00:00", "time": "22:00", "day": "tir 23. juni", "ts": 1782252000.0}, "28": {"iso": "2026-06-19T03:00:00", "time": "03:00", "day": "fre 19. juni", "ts": 1781838000.0}, "27": {"iso": "2026-06-19T00:00:00", "time": "00:00", "day": "fre 19. juni", "ts": 1781827200.0}, "29": {"iso": "2026-06-20T02:30:00", "time": "02:30", "day": "lør 20. juni", "ts": 1781922600.0}, "31": {"iso": "2026-06-20T05:00:00", "time": "05:00", "day": "lør 20. juni", "ts": 1781931600.0}, "34": {"iso": "2026-06-21T02:00:00", "time": "02:00", "day": "søn 21. juni", "ts": 1782007200.0}, "36": {"iso": "2026-06-21T06:00:00", "time": "06:00", "day": "søn 21. juni", "ts": 1782021600.0}, "40": {"iso": "2026-06-22T03:00:00", "time": "03:00", "day": "man 22. juni", "ts": 1782097200.0}, "37": {"iso": "2026-06-22T00:00:00", "time": "00:00", "day": "man 22. juni", "ts": 1782086400.0}, "41": {"iso": "2026-06-23T02:00:00", "time": "02:00", "day": "tir 23. juni", "ts": 1782180000.0}, "44": {"iso": "2026-06-23T05:00:00", "time": "05:00", "day": "tir 23. juni", "ts": 1782190800.0}, "48": {"iso": "2026-06-24T04:00:00", "time": "04:00", "day": "ons 24. juni", "ts": 1782273600.0}, "46": {"iso": "2026-06-24T01:00:00", "time": "01:00", "day": "ons 24. juni", "ts": 1782262800.0}, "53": {"iso": "2026-06-25T03:00:00", "time": "03:00", "day": "tor 25. juni", "ts": 1782356400.0}, "51": {"iso": "2026-06-24T21:00:00", "time": "21:00", "day": "ons 24. juni", "ts": 1782334800.0}, "49": {"iso": "2026-06-25T00:00:00", "time": "00:00", "day": "tor 25. juni", "ts": 1782345600.0}, "59": {"iso": "2026-06-26T04:00:00", "time": "04:00", "day": "fre 26. juni", "ts": 1782446400.0}, "55": {"iso": "2026-06-25T22:00:00", "time": "22:00", "day": "tor 25. juni", "ts": 1782424800.0}, "57": {"iso": "2026-06-26T01:00:00", "time": "01:00", "day": "fre 26. juni", "ts": 1782435600.0}, "63": {"iso": "2026-06-27T05:00:00", "time": "05:00", "day": "lør 27. juni", "ts": 1782536400.0}, "65": {"iso": "2026-06-27T02:00:00", "time": "02:00", "day": "lør 27. juni", "ts": 1782525600.0}, "61": {"iso": "2026-06-26T21:00:00", "time": "21:00", "day": "fre 26. juni", "ts": 1782507600.0}, "69": {"iso": "2026-06-28T04:00:00", "time": "04:00", "day": "søn 28. juni", "ts": 1782619200.0}, "71": {"iso": "2026-06-28T01:30:00", "time": "01:30", "day": "søn 28. juni", "ts": 1782610200.0}, "67": {"iso": "2026-06-27T23:00:00", "time": "23:00", "day": "lør 27. juni", "ts": 1782601200.0}, "54": {"iso": "2026-06-25T03:00:00", "time": "03:00", "day": "tor 25. juni", "ts": 1782356400.0}, "52": {"iso": "2026-06-24T21:00:00", "time": "21:00", "day": "ons 24. juni", "ts": 1782334800.0}, "50": {"iso": "2026-06-25T00:00:00", "time": "00:00", "day": "tor 25. juni", "ts": 1782345600.0}, "60": {"iso": "2026-06-26T04:00:00", "time": "04:00", "day": "fre 26. juni", "ts": 1782446400.0}, "56": {"iso": "2026-06-25T22:00:00", "time": "22:00", "day": "tor 25. juni", "ts": 1782424800.0}, "58": {"iso": "2026-06-26T01:00:00", "time": "01:00", "day": "fre 26. juni", "ts": 1782435600.0}, "64": {"iso": "2026-06-27T05:00:00", "time": "05:00", "day": "lør 27. juni", "ts": 1782536400.0}, "66": {"iso": "2026-06-27T02:00:00", "time": "02:00", "day": "lør 27. juni", "ts": 1782525600.0}, "62": {"iso": "2026-06-26T21:00:00", "time": "21:00", "day": "fre 26. juni", "ts": 1782507600.0}, "70": {"iso": "2026-06-28T04:00:00", "time": "04:00", "day": "søn 28. juni", "ts": 1782619200.0}, "72": {"iso": "2026-06-28T01:30:00", "time": "01:30", "day": "søn 28. juni", "ts": 1782610200.0}, "68": {"iso": "2026-06-27T23:00:00", "time": "23:00", "day": "lør 27. juni", "ts": 1782601200.0}}, "stats": {"Roger": {"blink": 0, "diff": 0, "utf": 4, "bom": 8, "avg": 0.33, "pl": 12, "hitRate": 33, "hero": 0, "avgGoals": 2.7, "drawPct": 28, "perday": [1, 0, 1, 0, 2], "spec": "Nestenmann", "specd": "7 nesten-blink (bom med ett mål)", "winner": "Frankrike", "topscorer": "Harry Kane"}, "Jo": {"blink": 0, "diff": 0, "utf": 5, "bom": 7, "avg": 0.42, "pl": 12, "hitRate": 42, "hero": 0, "avgGoals": 2.7, "drawPct": 21, "perday": [1, 0, 1, 1, 2], "spec": "Bortesterk", "specd": "44% borteseier blant seierstips", "winner": "Spania", "topscorer": "Vinícius Jr."}, "Mats": {"blink": 0, "diff": 2, "utf": 4, "bom": 6, "avg": 0.5, "pl": 12, "hitRate": 50, "hero": 1, "avgGoals": 4.3, "drawPct": 15, "perday": [1, 0, 1, 1, 3], "spec": "Målfest-optimist", "specd": "4.3 mål i snitt per tips", "winner": "Spania", "topscorer": "Oyarzabal"}, "Reppe": {"blink": 2, "diff": 0, "utf": 5, "bom": 5, "avg": 0.92, "pl": 12, "hitRate": 58, "hero": 2, "avgGoals": 2.4, "drawPct": 3, "perday": [1, 3, 4, 1, 2], "spec": "Vinnertro", "specd": "bare 3% uavgjort-tips", "winner": "Frankrike", "topscorer": "Haaland"}, "Odda": {"blink": 2, "diff": 0, "utf": 3, "bom": 7, "avg": 0.75, "pl": 12, "hitRate": 42, "hero": 1, "avgGoals": 2.4, "drawPct": 27, "perday": [3, 3, 1, 0, 2], "spec": "Remis-orakel", "specd": "uavgjort i 27% av tipsene", "winner": null, "topscorer": "Harry Kane"}, "Stien": {"blink": 1, "diff": 0, "utf": 3, "bom": 8, "avg": 0.5, "pl": 12, "hitRate": 33, "hero": 0, "avgGoals": 2.4, "drawPct": 17, "perday": [3, 0, 0, 1, 2], "spec": "Hjemmesterk", "specd": "65% hjemmeseier blant seierstips", "winner": "Spania", "topscorer": "Mbappé"}, "Robertsen": {"blink": 2, "diff": 2, "utf": 2, "bom": 6, "avg": 0.83, "pl": 12, "hitRate": 50, "hero": 2, "avgGoals": 2.6, "drawPct": 17, "perday": [3, 0, 4, 1, 2], "spec": "Mot strømmen", "specd": "gikk mot folket i 4 av 12", "winner": "Spania", "topscorer": "Harry Kane"}, "Berg": {"blink": 2, "diff": 0, "utf": 3, "bom": 7, "avg": 0.75, "pl": 12, "hitRate": 42, "hero": 1, "avgGoals": 2.4, "drawPct": 24, "perday": [3, 0, 4, 1, 1], "spec": "Skarpskytter", "specd": "2 blink på 12 kamper", "winner": null, "topscorer": null}, "Per Henrik": {"blink": 1, "diff": 0, "utf": 3, "bom": 8, "avg": 0.5, "pl": 12, "hitRate": 33, "hero": 0, "avgGoals": 2.7, "drawPct": 15, "perday": [3, 0, 0, 1, 2], "spec": "Stødig", "specd": "trygge, jevne resultater", "winner": "Spania", "topscorer": "Mbappé"}, "Haggis": {"blink": 1, "diff": 0, "utf": 4, "bom": 7, "avg": 0.58, "pl": 12, "hitRate": 42, "hero": 1, "avgGoals": 2.4, "drawPct": 18, "perday": [1, 3, 1, 1, 1], "spec": "Gjerrigknark", "specd": "26% målfattige tips (≤1 mål)", "winner": "Spania", "topscorer": "Haaland"}, "Johannes": {"blink": 0, "diff": 3, "utf": 4, "bom": 5, "avg": 0.58, "pl": 12, "hitRate": 58, "hero": 2, "avgGoals": 3.4, "drawPct": 14, "perday": [1, 1, 1, 1, 3], "spec": "Presis", "specd": "uttelling i 58% av kampene", "winner": "Frankrike", "topscorer": "Harry Kane"}, "Thomas": {"blink": 1, "diff": 1, "utf": 4, "bom": 6, "avg": 0.67, "pl": 12, "hitRate": 50, "hero": 1, "avgGoals": 2.7, "drawPct": 18, "perday": [3, 0, 1, 1, 3], "spec": "Vågehals", "specd": "spår ville, sprikende resultater", "winner": "Frankrike", "topscorer": "Mbappé"}, "MJ": {"blink": 1, "diff": 1, "utf": 3, "bom": 7, "avg": 0.58, "pl": 12, "hitRate": 42, "hero": 0, "avgGoals": 2.7, "drawPct": 15, "perday": [3, 0, 1, 1, 2], "spec": "Folkets stemme", "specd": "fulgte favoritten i 12 av 12", "winner": "Spania", "topscorer": "Julián Álvarez"}, "Øyvind": {"blink": 0, "diff": 3, "utf": 4, "bom": 5, "avg": 0.58, "pl": 12, "hitRate": 58, "hero": 2, "avgGoals": 2.4, "drawPct": 9, "perday": [1, 1, 1, 1, 3], "spec": "Storseier-tro", "specd": "tippet en 8-måls margin", "winner": "Spania", "topscorer": "Harry Kane"}, "Trygve": {"blink": 1, "diff": 0, "utf": 3, "bom": 8, "avg": 0.5, "pl": 12, "hitRate": 33, "hero": 0, "avgGoals": 3.2, "drawPct": 10, "perday": [3, 0, 1, 1, 1], "spec": "Sluttspurt", "specd": "sterkest på de siste dagene", "winner": "Frankrike", "topscorer": null}, "Ole": {"blink": 2, "diff": 0, "utf": 4, "bom": 6, "avg": 0.83, "pl": 12, "hitRate": 50, "hero": 2, "avgGoals": 2.2, "drawPct": 15, "perday": [1, 6, 1, 1, 1], "spec": "Tidligfugl", "specd": "best i åpningsdagene", "winner": null, "topscorer": null}, "Jens": {"blink": 2, "diff": 0, "utf": 5, "bom": 5, "avg": 0.92, "pl": 12, "hitRate": 58, "hero": 2, "avgGoals": 2.5, "drawPct": 19, "perday": [1, 3, 4, 1, 2], "spec": "Poengmaskin", "specd": "0.92 poeng i snitt per kamp", "winner": null, "topscorer": null}}};
+const PAL = ['#9fd9bd','#e08a6b','#86a7d6','#caa6e0','#d6c486','#5fc2b8','#d98fb0','#9aa6e6','#b6d77a']; // ranks 2-10
+const GREY = 'rgba(138,166,156,.38)';
+let sel = D.days.length-1; // selected day index (live = last)
+
+const players = D.players;
+const finalRank=[...players].sort((a,b)=> D.totals[b]-D.totals[a] || a.localeCompare(b));
+const TOPN=10;
+const HILITE=finalRank.slice(0,TOPN);            // top 10 get colour
+const colorOf={}; finalRank.forEach((p,i)=>{
+  colorOf[p] = i===0 ? '#f5c451' : (i<TOPN ? PAL[i-1] : GREY);
+});
+
+function totalAfter(p,di){ return D.cum[p][di].tot; }
+function fmtPick(o){ return (o.p1==null?'–':o.p1)+'-'+(o.p2==null?'–':o.p2); }
+
+/* ---------- chart ---------- */
+function drawChart(){
+ const svg=document.getElementById('chart');
+ const W=720,H=280, mL=22,mR=14,mT=14,mB=26;
+ const nd=D.days.length;
+ let maxV=0; players.forEach(p=>{ maxV=Math.max(maxV,totalAfter(p,nd-1)); });
+ maxV=Math.ceil((maxV+1)/2)*2;
+ const x=i=> mL + i*(W-mL-mR)/(nd-1);
+ const y=v=> mT + (H-mT-mB)*(1 - v/maxV);
+ let s='';
+ for(let g=0; g<=maxV; g+=2){
+   s+=`<line x1="${mL}" y1="${y(g)}" x2="${W-mR}" y2="${y(g)}" stroke="rgba(234,242,238,.07)"/>`;
+   s+=`<text x="${mL-5}" y="${y(g)+3}" fill="#5d7b71" font-size="9" text-anchor="end" font-family="Space Mono">${g}</text>`;
+ }
+ D.days.forEach((d,i)=>{
+   const anc = i===0?'start':(i===nd-1?'end':'middle');
+   s+=`<text x="${x(i)}" y="${H-8}" fill="#8aa69c" font-size="10" text-anchor="${anc}" font-family="Anton" letter-spacing=".5">${d.label.toUpperCase()}</text>`;
+ });
+ const lead=finalRank[0];
+ const order=[...players].sort((a,b)=>{
+   const ah=HILITE.includes(a), bh=HILITE.includes(b);
+   if(ah!==bh) return ah?1:-1;
+   return (a===lead?1:0)-(b===lead?1:0);
+ });
+ order.forEach(p=>{
+   const hi=HILITE.includes(p), isLead=p===lead, col=colorOf[p];
+   let dpath=''; D.days.forEach((d,i)=>{ dpath+=(i?'L':'M')+x(i)+' '+y(totalAfter(p,i))+' '; });
+   s+=`<path d="${dpath}" fill="none" stroke="${col}" stroke-width="${isLead?3.5:hi?2.2:1.1}" opacity="${hi?1:.45}" stroke-linejoin="round" stroke-linecap="round"/>`;
+   if(hi) D.days.forEach((d,i)=>{ s+=`<circle cx="${x(i)}" cy="${y(totalAfter(p,i))}" r="${isLead?4:3}" fill="${col}" stroke="#0a1d1a" stroke-width="1"/>`; });
+ });
+ s+=`<line x1="${x(sel)}" y1="${mT}" x2="${x(sel)}" y2="${H-mB}" stroke="rgba(245,196,81,.35)" stroke-dasharray="3 4"/>`;
+ svg.innerHTML=s;
+}
+
+/* ---------- chart legend (under graph, leader first) ---------- */
+function drawLegend(){
+ const box=document.getElementById('chartLegend'); if(!box)return;
+ let h='';
+ finalRank.forEach((p,i)=>{
+   if(i>=TOPN) return;
+   h+=`<span class="lg ${i===0?'lead':''}"><span class="lgsw" style="background:${colorOf[p]}"></span>`+
+      `<span class="lgrk">${i+1}</span><span class="lgnm">${p}</span><span class="lgpt">${D.totals[p]}</span></span>`;
+ });
+ const rest=players.length-TOPN;
+ if(rest>0) h+=`<span class="lg muted"><span class="lgsw" style="background:${GREY}"></span><span class="lgnm">+ ${rest} andre</span></span>`;
+ box.innerHTML=h;
+}
+
+
+/* ---------- scrubber ---------- */
+function drawScrub(){
+ const c=document.getElementById('scrub'); c.innerHTML='';
+ D.days.forEach((d,i)=>{
+   const b=document.createElement('button');
+   b.className='daybtn'+(i===sel?' on':'');
+   b.innerHTML=`<div class="d">${d.label}</div><div class="dt">${d.date} · ${d.matches.length} ${d.matches.length>1?'kamper':'kamp'}</div>`;
+   b.onclick=()=>{sel=i;render();};
+   c.appendChild(b);
+ });
+}
+
+/* ---------- board ---------- */
+function drawBoard(){
+ const board=document.getElementById('board');
+ document.getElementById('asof').textContent='Etter '+D.days[sel].label.toLowerCase();
+ const ranked=[...players].sort((a,b)=> totalAfter(b,sel)-totalAfter(a,sel) || a.localeCompare(b));
+ let last=null,rk=0; board.innerHTML='';
+ ranked.forEach((p,idx)=>{
+   const v=totalAfter(p,sel); if(v!==last){rk=idx+1;last=v;}
+   const dd=D.cum[p][sel].day;
+   // composition up to selected day
+   let o=0,e=0;
+   for(let i=0;i<=sel;i++) D.days[i].matches.forEach(m=>{const c=D.detail[p][m].comp;o+=c[0];e+=c[1];});
+   const blink=e, utfOnly=o-e;
+   const bar=`<div class="compbar">
+     ${blink>0?`<i style="width:${blink*16+8}px;background:#f5c451" title="Riktig resultat (3p)"></i>`:''}
+     ${utfOnly>0?`<i style="width:${utfOnly*11+5}px;background:rgba(159,217,189,.4)" title="Rett utfall (1p)"></i>`:''}
+   </div>`;
+   const isEmpty=(D.empty||[]).includes(p);
+   const tag=isEmpty?'<span class="delta zero" style="color:#e08a6b">tom kupong</span>':`<span class="delta ${dd?'':'zero'}">${dd?'+'+dd:'+0'}</span>`;
+   const mv = sel>0 ? (D.ranks[sel-1][p]-D.ranks[sel][p]) : null;
+   const mvhtml = sel===0 ? '' : (mv>0?`<span class="rmove up">▲${mv}</span>`: mv<0?`<span class="rmove down">▼${-mv}</span>`:`<span class="rmove same">–</span>`);
+   const row=document.createElement('div');
+   row.className='row'+(rk===1?' lead':'');
+   row.innerHTML=`<div class="rkwrap"><div class="rk">${rk}</div>${mvhtml}</div>
+     <div><div class="nm">${p}${tag}</div>${bar}</div>
+     <div class="tot">${v}<small>poeng</small></div>`;
+   board.appendChild(row);
+ });
+}
+
+/* ---------- matches ---------- */
+function drawMatches(){
+ const wrap=document.getElementById('matches');
+ document.getElementById('mtitle').textContent=D.days[sel].label+' · '+D.days[sel].date;
+ wrap.innerHTML='';
+ D.days[sel].matches.forEach(m=>{
+   const meta=D.meta[m], a=D.actual[m];
+   const top=conTop(m), aOut=OUT(a[0],a[1]), c=top.c, tot=top.n||1;
+   const picks=[...players].map(p=>({p,...D.detail[p][m]}))
+     .sort((x,y)=>y.pts-x.pts);
+   const heroes=[];
+   let pk='';
+   picks.forEach(o=>{
+     const pOut=OUT(o.p1,o.p2);
+     const hero = pOut && pOut===aOut && top.k!==aOut && pOut!==top.k;
+     if(hero) heroes.push(o.p);
+     pk+=`<div class="pick p${o.pts}"><span class="pn">${o.p}</span><span class="ps">${fmtPick(o)}</span>${hero?'<span class="star" title="Gikk mot strømmen">★</span>':''}<span class="pp">${o.pts}</span></div>`;
+   });
+   const seg=`<div class="mbar"><i style="width:${c.H/tot*100}%;background:#9fd9bd"></i><i style="width:${c.U/tot*100}%;background:rgba(234,242,238,.28)"></i><i style="width:${c.B/tot*100}%;background:#e08a6b"></i></div>`;
+   const heroLine = heroes.length?` · <span class="hero">★ mot strømmen: ${heroes.join(', ')}</span>`:'';
+   const conline=`<div class="mcon">${seg}<span>Folket: <b style="color:var(--ink)">${top.count}/${top.n}</b> ${outLabel(top.k,meta.h,meta.a).toLowerCase()}${heroLine}</span></div>`;
+   const el=document.createElement('div'); el.className='match';
+   el.innerHTML=`<div class="mh"><span class="grp">${meta.g}</span>
+     <span class="teams">${meta.h} – ${meta.a}</span>
+     <span class="fasit">${a[0]}-${a[1]}<span class="ft">FT</span></span></div>
+     ${conline}
+     <div class="picks">${pk}</div>`;
+   wrap.appendChild(el);
+ });
+}
+
+/* ---------- siste kamper ---------- */
+function drawRecent(){
+ const wrap=document.getElementById('recent');
+ const R=D.recent||[]; wrap.innerHTML='';
+ R.forEach((m,i)=>{
+   const hw=m.s1>m.s2, aw=m.s2>m.s1;
+   const el=document.createElement('div');
+   el.className='rcard'+(i===0?' newest':'');
+   el.innerHTML=`<div class="rtop"><span class="rgrp">${m.g}</span><span class="rday">${m.day}</span></div>
+     <div class="rteam ${hw?'win':aw?'lose':''}"><span class="tn">${m.h}</span><span class="sc">${m.s1}</span></div>
+     <div class="rteam ${aw?'win':hw?'lose':''}"><span class="tn">${m.a}</span><span class="sc">${m.s2}</span></div>
+     <span class="ftbadge">${i===0?'SISTE · FT':'FT'}</span>`;
+   wrap.appendChild(el);
+ });
+ document.getElementById('recentmeta').textContent='Faktiske resultater';
+}
+
+/* ---------- helpers for consensus / movers ---------- */
+const OUT=(x,y)=> (x==null||y==null)?null:(x>y?'H':x===y?'U':'B');
+function conTop(m){ const c=(D.consensus&&D.consensus[m])||{H:0,U:0,B:0,n:0};
+  let k='H'; if(c.U>c[k])k='U'; if(c.B>c[k])k='B';
+  return {k,count:c[k],n:c.n,c}; }
+function outLabel(k,h,a){ return k==='H'?h+' vinner':k==='U'?'uavgjort':a+' vinner'; }
+
+/* ---------- climbers & fallers ---------- */
+function drawMovers(){
+ const box=document.getElementById('movers'); box.style.display='flex'; let h='';
+ if(sel>0){
+   const prev=D.ranks[sel-1], cur=D.ranks[sel]; let up=null,down=null;
+   players.forEach(p=>{ if((D.empty||[]).includes(p))return; const d=prev[p]-cur[p];
+     if(d>0 && (!up||d>up.d)) up={p,d};
+     if(d<0 && (!down||d<down.d)) down={p,d};
+   });
+   if(up) h+=`<div class="mv up"><span class="ic">▲</span><div><div class="mt">Dagens rakett</div><div class="mn"><b>${up.p}</b></div></div><span class="delta-pl">+${up.d}</span></div>`;
+   if(down) h+=`<div class="mv down"><span class="ic">▼</span><div><div class="mt">Dagens fall</div><div class="mn"><b>${down.p}</b></div></div><span class="delta-pl">${down.d}</span></div>`;
+ }
+ const nonEmpty=players.filter(p=>!(D.empty||[]).includes(p));
+ const spoon=[...nonEmpty].sort((a,b)=> totalAfter(a,sel)-totalAfter(b,sel) || a.localeCompare(b))[0];
+ if(spoon) h+=`<div class="mv spoon"><span class="ic">🥄</span><div><div class="mt">Tresleiva</div><div class="mn"><b>${spoon}</b></div></div><span class="delta-pl">${totalAfter(spoon,sel)}p</span></div>`;
+ box.innerHTML=h;
+}
+
+/* ---------- gruppens VM-tips ---------- */
+function drawPredSum(){
+ const box=document.getElementById('predsum'); if(!box)return;
+ const cw={}, ct={};
+ players.forEach(p=>{const s=D.stats[p];
+   if(s.winner) cw[s.winner]=(cw[s.winner]||0)+1;
+   if(s.topscorer) ct[s.topscorer]=(ct[s.topscorer]||0)+1; });
+ const fmt=o=>{ const e=Object.entries(o).sort((a,b)=>b[1]-a[1]);
+   if(!e.length) return '<span class="pchip ph">ingen tips ennå</span>';
+   return e.map(([k,v],i)=>`<span class="pchip${i===0?' top':''}"><b>${k}</b> ×${v}</span>`).join(''); };
+ box.innerHTML=`<div class="predrow"><span class="pl">🏆 VM-vinner</span>${fmt(cw)}</div>`+
+   `<div class="predrow"><span class="pl">👟 Toppscorer</span>${fmt(ct)}</div>`;
+}
+
+/* ---------- player stats ---------- */
+function drawStats(){
+ const wrap=document.getElementById('stats'); if(!wrap)return; wrap.innerHTML='';
+ const ord=[...players].sort((a,b)=> D.totals[b]-D.totals[a] || a.localeCompare(b));
+ let maxDay=1; players.forEach(p=>(D.stats[p].perday||[]).forEach(d=>{if(d>maxDay)maxDay=d;}));
+ let last=null,rk=0;
+ ord.forEach((p,idx)=>{
+   const v=D.totals[p]; if(v!==last){rk=idx+1;last=v;}
+   const s=D.stats[p], empty=(D.empty||[]).includes(p);
+   const seg=(c,col,t)=> c>0?`<i style="flex:${c};background:${col}" title="${t}: ${c}"></i>`:'';
+   const bar=empty?'<i style="flex:1;background:rgba(234,242,238,.08)"></i>':
+     seg(s.blink,'#f5c451','Blink')+seg(s.diff,'#c59be0','Differanse')+seg(s.utf,'#9fd9bd','Utfall')+seg(s.bom,'rgba(234,242,238,.16)','Bom');
+   let form='';
+   (s.perday||[]).forEach((d,i)=>{ const hgt=Math.round(d/maxDay*100);
+     form+=`<span class="fb" title="${D.days[i].label}: ${d}p"><i style="height:${d?Math.max(hgt,10):4}%"></i><em>${D.days[i].label.replace('Dag ','D')}</em></span>`; });
+   let best=null;
+   if(!empty) D.played.forEach(m=>{ const dd=D.detail[p][m]; if(dd && (!best||dd.pts>best.pts)) best={m,pts:dd.pts,pp:dd}; });
+   let bestLine='';
+   if(best && best.pts>0){ const mt=D.meta[best.m]; const kind=best.pts===3?'blink':'rett utfall';
+     bestLine=`<div class="sbest"><span class="bl">Beste:</span> ${mt.h}–${mt.a} <b>${best.pp.p1}-${best.pp.p2}</b> <span class="bk">(${kind} +${best.pts})</span></div>`;
+   } else if(!empty){ bestLine=`<div class="sbest muted">Ingen uttelling ennå</div>`; }
+   const quick = empty? '<span>tom kupong</span>' :
+     `<span title="Andel kamper med uttelling">🎯 ${s.hitRate}% treff</span>`+
+     `<span title="Snitt poeng per kamp">⌀ ${s.avg} snitt</span>`+
+     (s.hero>0?`<span class="hero" title="Traff mot folkets favoritt">★ ${s.hero} mot strømmen</span>`
+              :`<span title="Snitt mål i egne tips">⚽ ${s.avgGoals} mål/tips</span>`);
+   const w=s.winner, t=s.topscorer;
+   const pred=`<div class="scpred">
+       <div><span>🏆 VM-vinner</span><b class="${w?'':'ph'}">${w||'—'}</b></div>
+       <div><span>👟 Toppscorer</span><b class="${t?'':'ph'}">${t||'—'}</b></div>
+     </div>`;
+   const card=document.createElement('div'); card.className='statcard'+(rk===1?' lead':'');
+   card.innerHTML=`
+     <div class="sct"><span class="scrk">${rk}</span><span class="scnm">${p}</span><span class="sctot">${v}<small>p</small></span></div>
+     <div class="scbar" title="Blink ${s.blink} · Diff ${s.diff} · Utfall ${s.utf} · Bom ${s.bom}">${bar}</div>
+     <div class="scnums"><span><b style="color:#f5c451">${s.blink}</b> blink</span><span><b style="color:#c59be0">${s.diff}</b> diff</span><span><b style="color:#9fd9bd">${s.utf}</b> utfall</span><span><b style="color:var(--muted2)">${s.bom}</b> bom</span></div>
+     <div class="scquick">${quick}</div>
+     <div class="scform"><span class="fl">Form</span>${form}</div>
+     <div class="scspec"><b>${s.spec}</b> — ${s.specd}</div>
+     ${bestLine}
+     ${pred}`;
+   wrap.appendChild(card);
+ });
+}
+
+/* ---------- del stillingen som PNG ---------- */
+async function drawShareImage(){
+ const btn=document.getElementById('shareBtn'); const orig=btn?btn.textContent:'';
+ if(btn){btn.textContent='Lager bilde …'; btn.disabled=true;}
+ try{ if(document.fonts&&document.fonts.ready) await document.fonts.ready; }catch(e){}
+ const ord=[...players].sort((a,b)=> totalAfter(b,sel)-totalAfter(a,sel)||a.localeCompare(b));
+ const scale=2, Wc=720, rowH=40, top=170, bot=60;
+ const Hc=top + ord.length*rowH + bot;
+ const cv=document.createElement('canvas'); cv.width=Wc*scale; cv.height=Hc*scale;
+ const g=cv.getContext('2d'); g.scale(scale,scale);
+ g.fillStyle='#0a1d1a'; g.fillRect(0,0,Wc,Hc);
+ g.fillStyle='rgba(245,196,81,0.06)'; g.fillRect(0,0,Wc,96);
+ g.font='400 46px Anton, sans-serif'; g.fillStyle='#eaf2ee'; g.fillText('VM-TIPPING ',38,66);
+ const tw=g.measureText('VM-TIPPING ').width; g.fillStyle='#f5c451'; g.fillText('2026',38+tw,66);
+ g.font='600 15px Inter, sans-serif'; g.fillStyle='#8aa69c';
+ g.fillText('Stilling etter '+D.days[sel].label.toLowerCase()+'  ·  12 av 72 kamper spilt',40,92);
+ let y=top-20; g.font='700 11px Inter, sans-serif'; g.fillStyle='#5d7b71';
+ g.fillText('#',44,y); g.fillText('DELTAKER',86,y);
+ g.textAlign='right'; g.fillText('POENG',Wc-44,y); g.textAlign='left';
+ let last2=null,rk2=0;
+ ord.forEach((p,idx)=>{
+   const v=totalAfter(p,sel); if(v!==last2){rk2=idx+1;last2=v;}
+   const ry=top+idx*rowH, lead=rk2===1;
+   g.fillStyle= lead?'rgba(245,196,81,0.12)':(idx%2?'rgba(255,255,255,0.025)':'rgba(255,255,255,0)');
+   g.fillRect(28,ry,Wc-56,rowH-6);
+   if(lead){g.fillStyle='#f5c451';g.fillRect(28,ry,3,rowH-6);}
+   g.font='400 20px Anton, sans-serif'; g.fillStyle=lead?'#f5c451':'#5d7b71'; g.fillText(String(rk2),42,ry+26);
+   g.font='600 16px Inter, sans-serif'; g.fillStyle=lead?'#f5c451':'#eaf2ee'; g.fillText(p,86,ry+26);
+   g.textAlign='right'; g.font='400 23px Anton, sans-serif'; g.fillStyle=lead?'#f5c451':'#eaf2ee'; g.fillText(String(v),Wc-44,ry+27); g.textAlign='left';
+ });
+ g.font='500 12px Inter, sans-serif'; g.fillStyle='#5d7b71';
+ g.fillText('Poeng: 3 for riktig resultat · 1 for riktig utfall · maks 3 per kamp',40,Hc-26);
+ cv.toBlob(b=>{ const u=URL.createObjectURL(b); const a=document.createElement('a');
+   a.href=u; a.download='vm-tipping-stilling.png'; document.body.appendChild(a); a.click(); a.remove();
+   setTimeout(()=>URL.revokeObjectURL(u),3000);
+   if(btn){btn.textContent=orig; btn.disabled=false;}
+ },'image/png');
+}
+
+/* ---------- kommende kamper ---------- */
+function drawUpcoming(){
+ const wrap=document.getElementById('upcoming'); if(!wrap)return; wrap.innerHTML='';
+ (D.upcoming||[]).forEach(m=>{
+   const top=conTop(m.nr), c=top.c, tot=top.n||1;
+   const seg=`<div class="conbar"><i style="width:${c.H/tot*100}%;background:#9fd9bd"></i><i style="width:${c.U/tot*100}%;background:rgba(234,242,238,.28)"></i><i style="width:${c.B/tot*100}%;background:#e08a6b"></i></div>`;
+   let tips='';
+   m.picks.forEach(pk=>{
+     const po=OUT(pk.p1,pk.p2), contra= po && po!==top.k;
+     const sc=(pk.p1==null?'–':pk.p1)+'-'+(pk.p2==null?'–':pk.p2);
+     tips+=`<div class="utip ${contra?'contra':''}" title="${contra?'mot folket':''}"><span class="un">${pk.p}</span><span class="us">${sc}</span></div>`;
+   });
+   const id='u'+m.nr;
+   const el=document.createElement('div'); el.className='ucard';
+   el.innerHTML=`<div class="uhd"><span class="grp">${m.g}</span><span class="uteams">${m.h} – ${m.a}</span>
+       <span class="uwhen">${m.day}<b>${m.time}</b></span></div>
+     <div class="ucon">${seg}
+       <div class="conlab"><span class="big">${outLabel(top.k,m.h,m.a)}</span><span>${top.count}/${top.n} av deltakerne</span></div>
+     </div>
+     <button class="reveal" data-id="${id}">Vis alles tips ▾ <span style="color:var(--muted2)">(spoiler)</span></button>
+     <div class="utips" id="${id}" style="display:none">${tips}</div>`;
+   wrap.appendChild(el);
+ });
+ wrap.querySelectorAll('.reveal').forEach(b=>{ b.onclick=()=>{
+   const t=document.getElementById(b.dataset.id), open=t.style.display==='flex';
+   t.style.display=open?'none':'flex';
+   b.innerHTML=open?'Vis alles tips ▾ <span style="color:var(--muted2)">(spoiler)</span>':'Skjul tips ▴';
+ };});
+}
+
+function render(){ drawScrub(); drawChart(); drawLegend(); drawMovers(); drawBoard(); drawMatches(); }
+
+document.getElementById('livetxt').textContent='LIVE · 12 av 72 kamper spilt';
+document.getElementById('racemeta').textContent=players.length+' deltakere';
+document.getElementById('foot').innerHTML=
+ 'Poeng (maks 3 per kamp): <b>3p</b> riktig resultat · <b>1p</b> riktig utfall. '+
+ 'Resultater hentet fra offisielle kilder 15. juni. 17 deltakere. Neste: Spania–Kapp Verde (18:00) og Belgia–Egypt (21:00) i kveld.';
+render();
+drawUpcoming();
+drawStats();
+drawPredSum();
+const _sb=document.getElementById('shareBtn'); if(_sb) _sb.onclick=drawShareImage;
+window.addEventListener('resize',drawChart);
+</script>
+</body>
+</html>
