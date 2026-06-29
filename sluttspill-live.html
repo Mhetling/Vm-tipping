@@ -119,7 +119,7 @@ const cur=ranks(A,'total'),prv=ranks(A,'prevTotal');
 A.forEach(P=>{P.crank=cur[P.name];P.delta=prv[P.name]-cur[P.name];});
 const R=A.sort((a,b)=>a.crank-b.crank||b.max-a.max);
 function lightCls(P){if(!P.champAlive)return'red';const r=P.advTot?P.aliveAdv/P.advTot:1;return r>=.85?'green':r>=.6?'yellow':'red';}
-document.getElementById('sub').textContent=`13 av 17 spillere · ${PLAYED.length} sluttspillkamp spilt · venter på Roger, MJ, Robertsen + Stien`;
+document.getElementById('sub').textContent=`${PLAYERS.length} spillere · ${PLAYED.length} sluttspillkamp spilt`;
 // highlight cards
 const rocket=[...R].sort((a,b)=>b.delta-a.delta||b.day-a.day)[0];
 const fall=[...R].sort((a,b)=>a.delta-b.delta||a.day-b.day)[0];
