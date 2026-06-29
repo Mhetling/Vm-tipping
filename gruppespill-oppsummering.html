@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gruppespillet 2026 — oppsummering</title>
+<style>
+:root{--bg:#0b0f14;--card:#141b24;--card2:#1b2430;--line:#263240;--txt:#e6edf3;--dim:#8b98a5;
+--gold:#ffcc33;--green:#3fb950;--risk:#ff8c42;--blue:#4493f8;--red:#f85149;--purple:#9d7bff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45;padding:16px;max-width:720px;margin:0 auto}
+h1{font-size:22px;font-weight:800;letter-spacing:-.3px}
+.sub{color:var(--dim);font-size:13px;margin-top:2px;margin-bottom:6px}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim);margin:26px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+/* podium */
+.pod{display:flex;gap:8px;align-items:flex-end;margin:14px 0}
+.pp{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center}
+.pp .m{font-size:22px}.pp .n{font-weight:800;font-size:15px;margin-top:2px}.pp .s{color:var(--dim);font-size:12px}
+.pp.g1{border-color:rgba(255,204,51,.5);background:linear-gradient(180deg,rgba(255,204,51,.12),var(--card));padding-bottom:22px}
+.pp.g2{border-color:rgba(180,190,200,.4)}.pp.g3{border-color:rgba(205,127,50,.4)}
+/* fun fact cards */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.fc .e{font-size:20px}
+.fc .t{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--dim);margin-top:4px;font-weight:700}
+.fc .big{font-size:17px;font-weight:800;margin-top:3px}
+.fc .d{font-size:12px;color:var(--dim);margin-top:3px;line-height:1.4}
+.fc.wide{grid-column:1/3}
+.fc.gold{border-color:rgba(255,204,51,.4)}.fc.gold .big{color:var(--gold)}
+.fc.purp{border-color:rgba(157,123,255,.4)}.fc.purp .big{color:var(--purple)}
+.fc.red{border-color:rgba(248,81,73,.35)}.fc.red .big{color:var(--red)}
+.fc.green .big{color:var(--green)}
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+tr.me td{color:var(--purple);font-weight:700}
+.rk{color:var(--dim);width:24px}
+.win td{color:var(--gold)}
+.up td:first-child{color:var(--purple)}
+.note{font-size:12px;color:var(--dim);margin-top:8px;line-height:1.6}
+.chip{display:inline-block;font-size:11px;background:var(--card2);border:1px solid var(--line);border-radius:6px;padding:1px 7px;margin:1px;color:var(--dim)}
+footer{margin-top:26px;color:var(--dim);font-size:11px;text-align:center}
+</style>
+</head>
+<body>
+<h1>⚽ Gruppespillet 2026</h1>
+<div class="sub">72 kamper · 17 spillere · all statistikken som teller (og litt som ikke gjør det)</div>
+
+<div class="pod">
+  <div class="pp g2"><div class="m">🥈</div><div class="n">Roger</div><div class="s">64 p</div></div>
+  <div class="pp g1"><div class="m">🥇</div><div class="n">Ole</div><div class="s">65 p</div></div>
+  <div class="pp g3"><div class="m">🥉</div><div class="n">Odda</div><div class="s">59 p</div></div>
+</div>
+
+<h2>Fun facts</h2>
+<div class="grid">
+  <div class="fc gold"><div class="e">🎯</div><div class="t">Blink-konge</div><div class="big">Roger — 10 blink</div><div class="d">Flest eksakte resultater. Odda og Ole nest best med 9.</div></div>
+  <div class="fc purp"><div class="e">😤</div><div class="t">Nestenmann-kongen</div><div class="big">Per Henrik — 28</div><div class="d">28 kamper bom med kun ett mål. Ingen var nærmere, oftere.</div></div>
+
+  <div class="fc wide purp"><div class="e">🌀</div><div class="t">Uflaks-universet — hvis «nesten» var blink</div><div class="big">Per Henrik ville ledet med 124 p</div><div class="d">Da snur hele tabellen: Per Henrik (54→124) raser fra 13. til 1., Roger 119, Thomas 116, Odda 115. Marginene var alt.</div></div>
+
+  <div class="fc wide red"><div class="e">💀</div><div class="t">Kampene INGEN så komme</div><div class="big">0 av 16 traff utfallet</div><div class="d">Australia 2–0 Tyrkia · Qatar 1–1 Sveits · Spania 0–0 Kapp Verde · Portugal 1–1 DR Kongo. Full pott bom for hele gjengen.</div></div>
+
+  <div class="fc"><div class="e">🎆</div><div class="t">Største målfest</div><div class="big">Tyskland 7–1 Curaçao</div><div class="d">8 mål — og 0 blinket den. Sverige 5–1 og Canada 6–0 fulgte etter.</div></div>
+  <div class="fc green"><div class="e">📊</div><div class="t">Mest tippede resultat</div><div class="big">2–1 (156 ganger)</div><div class="d">Foran 2–0 (146) og 1–1 (141). Den trygge favoritten.</div></div>
+
+  <div class="fc"><div class="e">⚽</div><div class="t">Toppscorer</div><div class="big">Messi — 6 mål</div><div class="d">Gullstøvelen så langt. Mbappé, Haaland og Vinícius på 4.</div></div>
+  <div class="fc gold"><div class="e">✅</div><div class="t">Enkleste blink</div><div class="big">Frankrike 3–0 Irak</div><div class="d">8 av 16 traff den på øret. Mexico 2–0 og Egypt 1–1 ga 7 blink hver.</div></div>
+</div>
+
+<h2>Hele tabellen</h2>
+<table>
+<tr><th class="rk">#</th><th>Spiller</th><th class="r">Poeng</th><th class="r">Blink</th><th class="r">Nesten</th></tr>
+<tr class="win"><td class="rk">1</td><td>Ole</td><td class="r">65</td><td class="r">9</td><td class="r">18</td></tr>
+<tr><td class="rk">2</td><td>Roger</td><td class="r">64</td><td class="r">10</td><td class="r">22</td></tr>
+<tr><td class="rk">3</td><td>Odda</td><td class="r">59</td><td class="r">9</td><td class="r">22</td></tr>
+<tr><td class="rk">4</td><td>Berg</td><td class="r">59</td><td class="r">7</td><td class="r">17</td></tr>
+<tr><td class="rk">5</td><td>Jens</td><td class="r">59</td><td class="r">7</td><td class="r">19</td></tr>
+<tr><td class="rk">6</td><td>Trygve</td><td class="r">58</td><td class="r">7</td><td class="r">19</td></tr>
+<tr><td class="rk">7</td><td>Stien</td><td class="r">57</td><td class="r">7</td><td class="r">21</td></tr>
+<tr><td class="rk">8</td><td>Øyvind</td><td class="r">57</td><td class="r">4</td><td class="r">21</td></tr>
+<tr><td class="rk">9</td><td>Reppe</td><td class="r">56</td><td class="r">6</td><td class="r">22</td></tr>
+<tr><td class="rk">10</td><td>Robertsen</td><td class="r">56</td><td class="r">—</td><td class="r">—</td></tr>
+<tr><td class="rk">11</td><td>Thomas</td><td class="r">55</td><td class="r">4</td><td class="r">26</td></tr>
+<tr><td class="rk">12</td><td>MJ</td><td class="r">55</td><td class="r">5</td><td class="r">23</td></tr>
+<tr><td class="rk">13</td><td>Per Henrik</td><td class="r">54</td><td class="r">6</td><td class="r">28</td></tr>
+<tr><td class="rk">14</td><td>Haggis</td><td class="r">54</td><td class="r">5</td><td class="r">23</td></tr>
+<tr><td class="rk">15</td><td>Johannes</td><td class="r">53</td><td class="r">4</td><td class="r">16</td></tr>
+<tr><td class="rk">16</td><td>Mats</td><td class="r">50</td><td class="r">3</td><td class="r">16</td></tr>
+<tr><td class="rk">17</td><td>Jo</td><td class="r">47</td><td class="r">5</td><td class="r">23</td></tr>
+</table>
+<div class="note">Robertsen-kupongen lå tom i arkivet, så blink/nesten mangler for ham. Tallene ellers er fra kupong-analyse mot fasit.</div>
+
+<h2>🌀 Uflaks-universet</h2>
+<div class="note" style="margin-top:0">Hvis hvert «nestenmann» (bom på ett mål) hadde blitt blink i stedet — hvem hadde ledet?</div>
+<table>
+<tr><th class="rk">#</th><th>Spiller</th><th class="r">Justert</th><th class="r">Ekte</th><th class="r">Hopp</th></tr>
+<tr class="up"><td class="rk">1</td><td>Per Henrik</td><td class="r">124</td><td class="r">54</td><td class="r">+70</td></tr>
+<tr><td class="rk">2</td><td>Roger</td><td class="r">119</td><td class="r">64</td><td class="r">+55</td></tr>
+<tr><td class="rk">3</td><td>Thomas</td><td class="r">116</td><td class="r">55</td><td class="r">+61</td></tr>
+<tr><td class="rk">4</td><td>Odda</td><td class="r">115</td><td class="r">59</td><td class="r">+56</td></tr>
+<tr><td class="rk">5</td><td>MJ</td><td class="r">110</td><td class="r">55</td><td class="r">+55</td></tr>
+<tr><td class="rk">6</td><td>Stien</td><td class="r">109</td><td class="r">57</td><td class="r">+52</td></tr>
+<tr><td class="rk">7</td><td>Haggis</td><td class="r">108</td><td class="r">54</td><td class="r">+54</td></tr>
+<tr><td class="rk">8</td><td>Ole</td><td class="r">107</td><td class="r">65</td><td class="r">+42</td></tr>
+</table>
+<div class="note">Per Henrik gikk fra 13. til 1. i denne verdenen — turneringens definitivt uheldigste mann. Ole, den ekte vinneren, faller til 8. fordi han allerede traff det meste blankt.</div>
+
+<h2>🎟️ Avansement — hvem leste turneringen?</h2>
+<div class="grid">
+  <div class="fc wide green"><div class="e">🎟️</div><div class="t">Avansement-orakel</div><div class="big">27 av 32 riktig</div><div class="d">Roger, Odda, Per Henrik, Haggis, Johannes og Ole traff flest av lagene som faktisk gikk videre. Tett felt — alle lå mellom 25 og 27.</div></div>
+  <div class="fc wide purp"><div class="e">👻</div><div class="t">Laget INGEN så komme</div><div class="big">Kapp Verde — 0 av 16</div><div class="d">Ikke én eneste spiller hadde dem videre. De ble nr. 2 i gruppe H og spiller nå mot Argentina i 8-delsfinalen.</div></div>
+  <div class="fc wide red"><div class="e">🪦</div><div class="t">Floppen alle stolte på</div><div class="big">Uruguay — 16 av 16</div><div class="d">Hele gjengen sendte dem videre. De røk ut i gruppespillet. Skottland (15), Tyrkia (15) og Sør-Korea (14) skuffet også de fleste.</div></div>
+</div>
+<table>
+<tr><th class="rk">#</th><th>Spiller</th><th class="r">Riktig avansement</th></tr>
+<tr><td class="rk">1</td><td>Roger</td><td class="r">27 / 32</td></tr>
+<tr><td class="rk">1</td><td>Odda</td><td class="r">27 / 32</td></tr>
+<tr><td class="rk">1</td><td>Per Henrik</td><td class="r">27 / 32</td></tr>
+<tr><td class="rk">1</td><td>Haggis</td><td class="r">27 / 32</td></tr>
+<tr><td class="rk">1</td><td>Johannes</td><td class="r">27 / 32</td></tr>
+<tr><td class="rk">1</td><td>Ole</td><td class="r">27 / 32</td></tr>
+<tr><td class="rk">7</td><td>Jens</td><td class="r">26 / 32</td></tr>
+<tr><td class="rk">7</td><td>Stien</td><td class="r">26 / 32</td></tr>
+<tr><td class="rk">7</td><td>MJ</td><td class="r">26 / 32</td></tr>
+<tr><td class="rk">7</td><td>Øyvind</td><td class="r">26 / 32</td></tr>
+<tr><td class="rk">7</td><td>Trygve</td><td class="r">26 / 32</td></tr>
+<tr><td class="rk">7</td><td>Jo</td><td class="r">26 / 32</td></tr>
+<tr><td class="rk">7</td><td>Mats</td><td class="r">26 / 32</td></tr>
+<tr><td class="rk">14</td><td>Reppe</td><td class="r">25 / 32</td></tr>
+<tr><td class="rk">14</td><td>Berg</td><td class="r">25 / 32</td></tr>
+<tr><td class="rk">14</td><td>Thomas</td><td class="r">25 / 32</td></tr>
+</table>
+<div class="note">Avansement = topp 2 i hver gruppe + de 8 beste treerne, regnet fra hver spillers tippede sluttabeller. Robertsen mangler (tom kupong).</div>
+
+<footer>Gruppespillet 2026 · oppsummering generert fra 16 kuponger + fasit</footer>
+</body>
+</html>
