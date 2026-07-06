@@ -122,9 +122,9 @@ const TSPICK={Ole:'Kane',Odda:'Kane',Roger:'Kane',Robertsen:'Kane',Johannes:'Kan
 const MATCH={};R32.forEach(m=>MATCH[m[0]]=[m[1],m[2]]);R16.forEach(m=>MATCH[m[0]]=[m[1],m[2]]);
 const DATES={};R32.forEach(m=>DATES[m[0]]=m[3]);R16.forEach(m=>DATES[m[0]]=m[3]);
 // ===== RESULTATER (90 min). ID:{s:[hjemme,borte], adv:"lag videre"} =====
-const ACTUAL={ 73:{s:[0,1],adv:"Canada"}, 74:{s:[1,1],adv:"Paraguay"}, 75:{s:[1,1],adv:"Marokko"}, 76:{s:[2,1],adv:"Brasil"}, 77:{s:[3,0],adv:"Frankrike"}, 78:{s:[1,2],adv:"Norge"}, 79:{s:[2,0],adv:"Mexico"}, 80:{s:[2,1],adv:"England"}, 81:{s:[2,0],adv:"USA"}, 82:{s:[2,2],adv:"Belgia"}, 83:{s:[2,1],adv:"Portugal"}, 84:{s:[3,0],adv:"Spania"}, 85:{s:[2,0],adv:"Sveits"}, 86:{s:[1,1],adv:"Argentina"}, 87:{s:[1,0],adv:"Colombia"}, 88:{s:[1,1],adv:"Egypt"}, 89:{s:[0,1],adv:"Frankrike"}, 90:{s:[0,3],adv:"Marokko"} };
+const ACTUAL={ 73:{s:[0,1],adv:"Canada"}, 74:{s:[1,1],adv:"Paraguay"}, 75:{s:[1,1],adv:"Marokko"}, 76:{s:[2,1],adv:"Brasil"}, 77:{s:[3,0],adv:"Frankrike"}, 78:{s:[1,2],adv:"Norge"}, 79:{s:[2,0],adv:"Mexico"}, 80:{s:[2,1],adv:"England"}, 81:{s:[2,0],adv:"USA"}, 82:{s:[2,2],adv:"Belgia"}, 83:{s:[2,1],adv:"Portugal"}, 84:{s:[3,0],adv:"Spania"}, 85:{s:[2,0],adv:"Sveits"}, 86:{s:[1,1],adv:"Argentina"}, 87:{s:[1,0],adv:"Colombia"}, 88:{s:[1,1],adv:"Egypt"}, 89:{s:[0,1],adv:"Frankrike"}, 90:{s:[0,3],adv:"Marokko"}, 91:{s:[1,2],adv:"Norge"}, 92:{s:[2,3],adv:"England"} };
 // ===== kamper spilt SISTE DØGN (for dagens rakett/fall + døgn-poeng) =====
-const LAST_DAY=[89,90];
+const LAST_DAY=[91,92];
 const sign=x=>x>0?1:(x<0?-1:0);
 const PLAYED=Object.keys(ACTUAL).map(Number);
 const ELIM=new Set();
@@ -190,12 +190,12 @@ Object.entries(champ).sort((a,b)=>b[1].length-a[1].length).forEach(([t,names])=>
   el.innerHTML=`<summary><span class="rname ${dead?'dead':''}">${t}</span><span class="rbarwrap"><span class="rbar" style="width:${names.length/cmax*100}%;${dead?'background:var(--red)':''}"></span></span><span class="rcnt">${names.length}</span><span class="chev">▾</span></summary><div class="who"><b>${names.join(', ')}</b></div>`;
   race.appendChild(el);});
 // topscorer race (actual Golden Boot + backers)
-const TOPSCORERS=[{n:'Mbappé',t:'Frankrike',g:7,note:'leder (assists)'},{n:'Messi',t:'Argentina',g:7},{n:'Haaland',t:'Norge',g:5},{n:'Kane',t:'England',g:5},{n:'Vinícius Jr',t:'Brasil',g:4},{n:'Oyarzabal',t:'Spania',g:4},{n:'Dembélé',t:'Frankrike',g:4}];
+const TOPSCORERS=[{n:'Mbappé',t:'Frankrike',g:7,note:'leder (assists)'},{n:'Messi',t:'Argentina',g:7},{n:'Haaland',t:'Norge',g:7},{n:'Kane',t:'England',g:6},{n:'Oyarzabal',t:'Spania',g:4},{n:'Vinícius Jr',t:'Brasil',g:4},{n:'Dembélé',t:'Frankrike',g:4}];
 const tsBackers={};Object.entries(TSPICK).forEach(([pl,sc])=>{(tsBackers[sc]=tsBackers[sc]||[]).push(pl);});
 const tmax=Math.max(...TOPSCORERS.map(s=>s.g));const tsc=document.getElementById('tsc');
 TOPSCORERS.forEach((s,i)=>{const dead=ELIM.has(s.t);const lead=i===0;const who=tsBackers[s.n]||[];
   const el=document.createElement('details');el.className='rr tscrow';
-  el.innerHTML=`<summary><span class="rname ${dead?'dead':''}">${s.n} <span class="tsteam">${s.t}</span>${lead?' <span class="tslead">👑</span>':''}${s.note?` <span class="tsnote">${s.note}</span>`:''}</span><span class="rbarwrap"><span class="rbar" style="width:${s.g/tmax*100}%;${lead?'background:var(--gold)':''}"></span></span><span class="rcnt">${s.g}⚽</span><span class="tspk">${who.length}👤</span><span class="chev">▾</span></summary><div class="who">${who.length?`<b>${who.join(', ')}</b> har tippet ${s.n}`:'Ingen har tippet '+s.n}</div>`;
+  el.innerHTML=`<summary><span class="rname ${dead?'dead':''}">${s.n} <span class="tsteam">${s.t}${dead?' · ute':''}</span>${lead?' <span class="tslead">👑</span>':''}${s.note?` <span class="tsnote">${s.note}</span>`:''}</span><span class="rbarwrap"><span class="rbar" style="width:${s.g/tmax*100}%;${lead?'background:var(--gold)':''}"></span></span><span class="rcnt">${s.g}⚽</span><span class="tspk">${who.length}👤</span><span class="chev">▾</span></summary><div class="who">${who.length?`<b>${who.join(', ')}</b> har tippet ${s.n}`:'Ingen har tippet '+s.n}</div>`;
   tsc.appendChild(el);});
 const cons=document.getElementById('cons');
 R16.forEach(([id,t1,t2])=>{const a=ACTUAL[id];const b1=[],b2=[],dd=[];
