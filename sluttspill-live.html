@@ -122,9 +122,9 @@ const TSPICK={Ole:'Kane',Odda:'Kane',Roger:'Kane',Robertsen:'Kane',Johannes:'Kan
 const MATCH={};R32.forEach(m=>MATCH[m[0]]=[m[1],m[2]]);R16.forEach(m=>MATCH[m[0]]=[m[1],m[2]]);
 const DATES={};R32.forEach(m=>DATES[m[0]]=m[3]);R16.forEach(m=>DATES[m[0]]=m[3]);
 // ===== RESULTATER (90 min). ID:{s:[hjemme,borte], adv:"lag videre"} =====
-const ACTUAL={ 73:{s:[0,1],adv:"Canada"}, 74:{s:[1,1],adv:"Paraguay"}, 75:{s:[1,1],adv:"Marokko"}, 76:{s:[2,1],adv:"Brasil"}, 77:{s:[3,0],adv:"Frankrike"}, 78:{s:[1,2],adv:"Norge"}, 79:{s:[2,0],adv:"Mexico"}, 80:{s:[2,1],adv:"England"}, 81:{s:[2,0],adv:"USA"}, 82:{s:[2,2],adv:"Belgia"}, 83:{s:[2,1],adv:"Portugal"}, 84:{s:[3,0],adv:"Spania"}, 85:{s:[2,0],adv:"Sveits"}, 86:{s:[1,1],adv:"Argentina"}, 87:{s:[1,0],adv:"Colombia"}, 88:{s:[1,1],adv:"Egypt"}, 89:{s:[0,1],adv:"Frankrike"}, 90:{s:[0,3],adv:"Marokko"}, 91:{s:[1,2],adv:"Norge"}, 92:{s:[2,3],adv:"England"} };
+const ACTUAL={ 73:{s:[0,1],adv:"Canada"}, 74:{s:[1,1],adv:"Paraguay"}, 75:{s:[1,1],adv:"Marokko"}, 76:{s:[2,1],adv:"Brasil"}, 77:{s:[3,0],adv:"Frankrike"}, 78:{s:[1,2],adv:"Norge"}, 79:{s:[2,0],adv:"Mexico"}, 80:{s:[2,1],adv:"England"}, 81:{s:[2,0],adv:"USA"}, 82:{s:[2,2],adv:"Belgia"}, 83:{s:[2,1],adv:"Portugal"}, 84:{s:[3,0],adv:"Spania"}, 85:{s:[2,0],adv:"Sveits"}, 86:{s:[1,1],adv:"Argentina"}, 87:{s:[1,0],adv:"Colombia"}, 88:{s:[1,1],adv:"Egypt"}, 89:{s:[0,1],adv:"Frankrike"}, 90:{s:[0,3],adv:"Marokko"}, 91:{s:[1,2],adv:"Norge"}, 92:{s:[2,3],adv:"England"}, 93:{s:[0,1],adv:"Spania"}, 94:{s:[1,4],adv:"Belgia"} };
 // ===== kamper spilt SISTE DØGN (for dagens rakett/fall + døgn-poeng) =====
-const LAST_DAY=[91,92];
+const LAST_DAY=[93,94];
 const sign=x=>x>0?1:(x<0?-1:0);
 const PLAYED=Object.keys(ACTUAL).map(Number);
 const ELIM=new Set();
