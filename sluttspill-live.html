@@ -94,6 +94,14 @@ details[open] .chev{transform:rotate(180deg)}
 .tip.utf{border-color:rgba(63,185,80,.5)}.tip.utf .nm{color:var(--green)}.tip.bom{opacity:.55}
 .badge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px}.badge.up{background:var(--card2);color:var(--dim)}
 footer{margin-top:22px;color:var(--dim);font-size:11px;text-align:center;line-height:1.6}code{background:var(--card2);padding:1px 5px;border-radius:4px}
+.bsec{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px}
+.bt{font-size:12px;font-weight:800;margin-bottom:8px}
+.brow{display:flex;gap:9px;align-items:baseline;padding:4px 0;border-top:1px solid rgba(255,255,255,.05)}
+.brow:first-of-type{border-top:none}
+.bteam{font-weight:800;color:var(--gold);white-space:nowrap;flex:none;min-width:96px}
+.bg{font-size:11px;color:var(--dim);font-weight:600}
+.bwho{font-size:12.5px;color:var(--txt)}
+.bout{font-size:11px;color:var(--dim);margin-top:8px;font-style:italic}
 </style></head><body>
 <h1>VM 2026 — Sluttspill <span style="color:var(--dim);font-weight:600">live</span></h1>
 <div class="sub" id="sub"></div>
@@ -108,6 +116,8 @@ footer{margin-top:22px;color:var(--dim);font-size:11px;text-align:center;line-he
 <h2>⚽ Toppscorer — Gullstøvelen</h2>
 <div class="race" id="tsc"></div>
 <div class="expl" style="margin-top:8px">Faktisk måltopp nå — <b>⚽</b> mål, <b>👤</b> antall som har tippet spilleren (trykk for hvem). <b>+5</b> til den/de som har tippet den endelige gullstøvel-vinneren.</div>
+<h2>🎯 Hvem kan fortsatt hente bonus (+5)?</h2>
+<div id="bonus"></div>
 <h2>Semifinale — hvem går til finalen? <span class="taphint">▾ trykk for hvem</span></h2>
 <div id="cons"></div>
 <h2>Siste kamper</h2>
@@ -123,9 +133,9 @@ const TSPICK={Ole:'Kane',Odda:'Kane',Roger:'Kane',Robertsen:'Kane',Johannes:'Kan
 const MATCH={};R32.forEach(m=>MATCH[m[0]]=[m[1],m[2]]);R16.forEach(m=>MATCH[m[0]]=[m[1],m[2]]);QF.forEach(m=>MATCH[m[0]]=[m[1],m[2]]);SF.forEach(m=>MATCH[m[0]]=[m[1],m[2]]);
 const DATES={};R32.forEach(m=>DATES[m[0]]=m[3]);R16.forEach(m=>DATES[m[0]]=m[3]);QF.forEach(m=>DATES[m[0]]=m[3]);SF.forEach(m=>DATES[m[0]]=m[3]);
 // ===== RESULTATER (90 min). ID:{s:[hjemme,borte], adv:"lag videre"} =====
-const ACTUAL={ 73:{s:[0,1],adv:"Canada"}, 74:{s:[1,1],adv:"Paraguay"}, 75:{s:[1,1],adv:"Marokko"}, 76:{s:[2,1],adv:"Brasil"}, 77:{s:[3,0],adv:"Frankrike"}, 78:{s:[1,2],adv:"Norge"}, 79:{s:[2,0],adv:"Mexico"}, 80:{s:[2,1],adv:"England"}, 81:{s:[2,0],adv:"USA"}, 82:{s:[2,2],adv:"Belgia"}, 83:{s:[2,1],adv:"Portugal"}, 84:{s:[3,0],adv:"Spania"}, 85:{s:[2,0],adv:"Sveits"}, 86:{s:[1,1],adv:"Argentina"}, 87:{s:[1,0],adv:"Colombia"}, 88:{s:[1,1],adv:"Egypt"}, 89:{s:[0,1],adv:"Frankrike"}, 90:{s:[0,3],adv:"Marokko"}, 91:{s:[1,2],adv:"Norge"}, 92:{s:[2,3],adv:"England"}, 93:{s:[0,1],adv:"Spania"}, 94:{s:[1,4],adv:"Belgia"}, 95:{s:[3,2],adv:"Argentina"}, 96:{s:[0,0],adv:"Sveits"}, 97:{s:[2,0],adv:"Frankrike"}, 98:{s:[2,1],adv:"Spania"}, 99:{s:[1,1],adv:"England"}, 100:{s:[1,1],adv:"Argentina"} };
+const ACTUAL={ 73:{s:[0,1],adv:"Canada"}, 74:{s:[1,1],adv:"Paraguay"}, 75:{s:[1,1],adv:"Marokko"}, 76:{s:[2,1],adv:"Brasil"}, 77:{s:[3,0],adv:"Frankrike"}, 78:{s:[1,2],adv:"Norge"}, 79:{s:[2,0],adv:"Mexico"}, 80:{s:[2,1],adv:"England"}, 81:{s:[2,0],adv:"USA"}, 82:{s:[2,2],adv:"Belgia"}, 83:{s:[2,1],adv:"Portugal"}, 84:{s:[3,0],adv:"Spania"}, 85:{s:[2,0],adv:"Sveits"}, 86:{s:[1,1],adv:"Argentina"}, 87:{s:[1,0],adv:"Colombia"}, 88:{s:[1,1],adv:"Egypt"}, 89:{s:[0,1],adv:"Frankrike"}, 90:{s:[0,3],adv:"Marokko"}, 91:{s:[1,2],adv:"Norge"}, 92:{s:[2,3],adv:"England"}, 93:{s:[0,1],adv:"Spania"}, 94:{s:[1,4],adv:"Belgia"}, 95:{s:[3,2],adv:"Argentina"}, 96:{s:[0,0],adv:"Sveits"}, 97:{s:[2,0],adv:"Frankrike"}, 98:{s:[2,1],adv:"Spania"}, 99:{s:[1,1],adv:"England"}, 100:{s:[1,1],adv:"Argentina"}, 101:{s:[0,2],adv:"Spania"} };
 // ===== kamper spilt SISTE DØGN (for dagens rakett/fall + døgn-poeng) =====
-const LAST_DAY=[99,100];
+const LAST_DAY=[101];
 const sign=x=>x>0?1:(x<0?-1:0);
 const PLAYED=Object.keys(ACTUAL).map(Number);
 const ELIM=new Set();
@@ -188,16 +198,37 @@ const champ={};PLAYERS.forEach(P=>{(champ[P.champion]=champ[P.champion]||[]).pus
 const cmax=Math.max(...Object.values(champ).map(a=>a.length));const race=document.getElementById('race');
 Object.entries(champ).sort((a,b)=>b[1].length-a[1].length).forEach(([t,names])=>{const dead=ELIM.has(t);
   const el=document.createElement('details');el.className='rr';
-  el.innerHTML=`<summary><span class="rname ${dead?'dead':''}">${t}</span><span class="rbarwrap"><span class="rbar" style="width:${names.length/cmax*100}%;${dead?'background:var(--red)':''}"></span></span><span class="rcnt">${names.length}</span><span class="chev">▾</span></summary><div class="who"><b>${names.join(', ')}</b></div>`;
+  el.innerHTML=`<summary><span class="rname ${dead?'dead':''}">${t}${dead?' <span class="x">ute</span>':''}</span><span class="rbarwrap"><span class="rbar" style="width:${names.length/cmax*100}%;${dead?'background:var(--red)':''}"></span></span><span class="rcnt">${names.length}</span><span class="chev">▾</span></summary><div class="who"><b>${names.join(', ')}</b></div>`;
   race.appendChild(el);});
 // topscorer race (actual Golden Boot + backers)
-const TOPSCORERS=[{n:'Mbappé',t:'Frankrike',g:8,note:'leder (assists)'},{n:'Messi',t:'Argentina',g:8},{n:'Haaland',t:'Norge',g:7},{n:'Kane',t:'England',g:6},{n:'Bellingham',t:'England',g:6},{n:'Dembélé',t:'Frankrike',g:5},{n:'Oyarzabal',t:'Spania',g:4}];
+const TOPSCORERS=[{n:'Mbappé',t:'Frankrike',g:8,note:'leder (assists)'},{n:'Messi',t:'Argentina',g:8},{n:'Haaland',t:'Norge',g:7},{n:'Kane',t:'England',g:6},{n:'Bellingham',t:'England',g:6},{n:'Dembélé',t:'Frankrike',g:5},{n:'Oyarzabal',t:'Spania',g:5}];
 const tsBackers={};Object.entries(TSPICK).forEach(([pl,sc])=>{(tsBackers[sc]=tsBackers[sc]||[]).push(pl);});
 const tmax=Math.max(...TOPSCORERS.map(s=>s.g));const tsc=document.getElementById('tsc');
 TOPSCORERS.forEach((s,i)=>{const dead=ELIM.has(s.t);const lead=i===0;const who=tsBackers[s.n]||[];
   const el=document.createElement('details');el.className='rr tscrow';
   el.innerHTML=`<summary><span class="rname ${dead?'dead':''}">${s.n} <span class="tsteam">${s.t}${dead?' · ute':''}</span>${lead?' <span class="tslead">👑</span>':''}${s.note?` <span class="tsnote">${s.note}</span>`:''}</span><span class="rbarwrap"><span class="rbar" style="width:${s.g/tmax*100}%;${lead?'background:var(--gold)':''}"></span></span><span class="rcnt">${s.g}⚽</span><span class="tspk">${who.length}👤</span><span class="chev">▾</span></summary><div class="who">${who.length?`<b>${who.join(', ')}</b> har tippet ${s.n}`:'Ingen har tippet '+s.n}</div>`;
   tsc.appendChild(el);});
+// bonus eligibility (mester + toppscorer still possible)
+(function(){
+  const tmap={};TOPSCORERS.forEach(s=>tmap[s.n]={g:s.g,t:s.t});
+  const maxG=Math.max(...TOPSCORERS.map(s=>s.g));
+  const chAlive=ch=>!ELIM.has(ch);
+  const tsAlive=sc=>{const s=tmap[sc];if(!s)return false;return ELIM.has(s.t)?s.g>=maxG:true;};
+  const chG={},tsG={};
+  PLAYERS.forEach(P=>{if(chAlive(P.champion))(chG[P.champion]=chG[P.champion]||[]).push(P.name);});
+  PLAYERS.forEach(P=>{const sc=TSPICK[P.name];if(sc&&tsAlive(sc))(tsG[sc]=tsG[sc]||[]).push(P.name);});
+  const chOut=PLAYERS.filter(P=>!chAlive(P.champion));
+  const tsOut=PLAYERS.filter(P=>{const sc=TSPICK[P.name];return !sc||!tsAlive(sc);});
+  const row=(head,who)=>`<div class="brow"><span class="bteam">${head}</span><span class="bwho">${who.join(', ')}</span></div>`;
+  const outLine=arr=>arr.length?`<div class="bout">Ute av kampen: ${arr.map(P=>P.name).join(', ')}</div>`:'';
+  let html='<div class="bsec"><div class="bt">🏆 Mester (+5) — fortsatt mulig</div>';
+  Object.entries(chG).sort((a,b)=>b[1].length-a[1].length).forEach(([t,w])=>html+=row(t,w));
+  html+=outLine(chOut)+'</div>';
+  html+='<div class="bsec"><div class="bt">⚽ Toppscorer (+5) — fortsatt mulig</div>';
+  Object.entries(tsG).sort((a,b)=>b[1].length-a[1].length).forEach(([sc,w])=>{const s=tmap[sc];const froz=ELIM.has(s.t);html+=row(`${sc} <span class="bg">${s.g}⚽${froz?' frosset':''}</span>`,w);});
+  html+=outLine(tsOut)+'</div>';
+  document.getElementById('bonus').innerHTML=html;
+})();
 const cons=document.getElementById('cons');
 SF.forEach(([id,t1,t2])=>{const a=ACTUAL[id];const b1=[],b2=[],dd=[];
   PLAYERS.forEach(P=>{const pk=P.picks[id];if(!pk)return;(pk.a===t1?b1:pk.a===t2?b2:dd).push(P.name);});
@@ -236,7 +267,7 @@ function koCard(id){const[t1,t2]=MATCH[id];const both=[],one=[],none=[];
   return `<div class="mc"><div class="hd"><div class="vs">${t1} – ${t2}</div><div class="sc up">${DATES[id]}</div><span class="badge up">kommende</span></div>${sum}<div class="tips">${bh}${oh}${nh}</div></div>`;}
 const R16IDS=new Set(R16.map(m=>m[0]));
 const last=document.getElementById('last');
-const doneKO=PLAYED.filter(id=>id>=89).sort((x,y)=>y-x);
+const doneKO=PLAYED.filter(id=>id>=89&&(id<97||id>100)).sort((x,y)=>y-x);
 if(doneKO.length)doneKO.forEach(id=>last.insertAdjacentHTML('beforeend',card(id)));
 else last.innerHTML='<div class="expl">Ingen 8-delskamper spilt ennå.</div>';
 const upc=document.getElementById('upc');
